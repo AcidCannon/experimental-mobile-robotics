@@ -1,0 +1,9 @@
+<launch>
+
+    <include file="$(find competition2)/launch/start_world.launch" />
+
+    <include file="$(find competition2)/launch/start_robot.launch" />
+
+    <!-- <node type="rviz" name="rviz" pkg="rviz" args="-d $(find competition2)/rviz/config.rviz" /> -->
+
+</launch>
