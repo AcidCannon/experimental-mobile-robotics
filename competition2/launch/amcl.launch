@@ -1,0 +1,19 @@
+<launch>
+
+    <!-- map server -->
+    <!-- <arg name="map_file" default="$(find competition2)/maps/map.yaml" /> -->
+    <arg name="map_file" default="$(find competition2)/maps/map2.yaml" />
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+    <!-- amcl -->
+    <!-- sources:  -->
+    <!-- https://github.com/turtlebot/turtlebot_apps/blob/indigo/turtlebot_navigation/launch/includes/amcl/amcl.launch.xml -->
+    <!-- http://wiki.ros.org/amcl -->
+    <node pkg="amcl" type="amcl" name="amcl">
+        <rosparam file="$(find competition2)/params/amcl_params.yaml" command="load" />
+        <remap from="scan" to="/kobuki/laser/scan" />
+    </node>
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find competition2)/rviz/amcl_config.rviz" />
+
+</launch>
