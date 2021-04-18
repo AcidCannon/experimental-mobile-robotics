@@ -7,7 +7,7 @@
     <!-- amcl -->
     <node pkg="amcl" type="amcl" name="amcl">
         <rosparam file="$(find competition2)/params/amcl_params.yaml" command="load" />
-        <remap from="scan" to="/kobuki/laser/scan" />
+        <remap from="/scan" to="/kobuki/laser/scan" />
     </node>
 
     <!-- move base -->
@@ -32,12 +32,17 @@
         <param name="local_costmap/height" value="10.0"/>
 
         <!-- static global costmap -->
-        <rosparam file="$(find competition2)/params/costmap_global_static.yaml" command="load" ns="global_costmap" unless="$(arg no_static_map)"/>
+        <rosparam file="$(find competition2)/params/costmap_global.yaml" command="load" ns="global_costmap" unless="$(arg no_static_map)"/>
         
         <!-- global costmap with laser -->
-        <rosparam file="$(find competition2)/params/costmap_global_laser.yaml" command="load" ns="global_costmap" if="$(arg no_static_map)"/>
+        <!-- <rosparam file="$(find competition2)/params/costmap_global_laser.yaml" command="load" ns="global_costmap" if="$(arg no_static_map)"/>
         <param name="global_costmap/width" value="100.0" if="$(arg no_static_map)"/>
-        <param name="global_costmap/height" value="100.0" if="$(arg no_static_map)"/>
+        <param name="global_costmap/height" value="100.0" if="$(arg no_static_map)"/> -->
+
+        <remap from="/scan" to="/kobuki/laser/scan"/>
     </node>
+
+    <!-- rviz -->
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find competition2)/rviz/path_config.rviz" />
 
 </launch>

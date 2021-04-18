@@ -285,7 +285,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Map
-      Topic: /move_base/global_copstmap/global
+      Topic: /move_base/global_costmap/costmap
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -347,6 +347,31 @@ Visualization Manager:
       Topic: /move_base/DWAPlannerROS/local_plan
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Class: rviz/Polygon
+      Color: 158; 158; 158
+      Enabled: true
+      Name: Polygon
+      Queue Size: 10
+      Topic: move_base/local_costmap/footprint
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Queue Size: 10
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic: move_base/current_goal
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -375,7 +400,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 6.101206302642822
+      Distance: 31.059144973754883
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -383,17 +408,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -16.7509822845459
-        Y: -16.989500045776367
-        Z: -1.5503277778625488
+        X: 1.7635051012039185
+        Y: 0.161960169672966
+        Z: -2.062011957168579
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5397963523864746
+      Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
-      Yaw: 1.6054000854492188
+      Yaw: 1.305400013923645
     Saved: ~
 Window Geometry:
   Displays:
@@ -411,5 +436,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1600
-  X: 0
+  X: -1
   Y: -20

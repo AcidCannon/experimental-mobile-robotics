@@ -1,0 +1,8 @@
+global_frame: map
+robot_base_frame: base_link
+rolling_window: false
+# track_unknown_space: true
+
+plugins:
+  - {name: static,    type: "costmap_2d::StaticLayer"} # initialize costmap from static map
+  - {name: inflation, type: "costmap_2d::InflationLayer"} # inflates obstacles
