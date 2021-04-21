@@ -118,7 +118,7 @@ def main():
 
     while True:
 
-        selection = input("Which movement do you want to make? \n f: forward b: backward \n r: right l: left \n in-place rotation: rr: rotate right ll: rotate left \n s: stop e: exit \n Enter the number and hit enter: ")
+        selection = input("Which movement do you want to make? \n f: forward b: backward \n r: right l: left \n in-place rotation: rr: rotate right ll: rotate left \n s: stop e: exit \n Enter the letter and hit enter: ")
 
         if selection == "f":
             print("\nmoving forward\n")
