@@ -5,13 +5,14 @@ import rospy
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 
-class ShapeRoom:
+class ShapesRoom:
 
   def __init__(self):
     self.DEBUG = False
     self.image_raw = rospy.Subscriber("/camera/rgb/image_raw", Image, self.camera_callback)
     self.bridge_object = CvBridge()
     self.image = None
+    self.count = 0
     rospy.sleep(1)
 
   def camera_callback(self, data):
@@ -59,7 +60,7 @@ class ShapeRoom:
       target_mask = yellow_mask
     else:
       target_mask = blue_mask
-    
+    print("=== Report === Target color = " + color)    
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     result = cv2.bitwise_and(img, img, mask=target_mask)
     
@@ -69,7 +70,7 @@ class ShapeRoom:
     
     # cv2.imshow("result", result)
     # cv2.waitKey(0)
-
+    print("=== Report === Target shape = " + shape)
     target_shape = 'cube'
     if shape == 'cude':
       pass
@@ -82,12 +83,14 @@ class ShapeRoom:
     # keypoints = detector.detect(result)
     # im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     contours, _ = cv2.findContours(result, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    print(len(contours))
+    
     for contour in contours:
         approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
-        print("approx len:", len(approx))
+        print("=== Report === Found", color, shape, "Polygonal vertices length =", len(approx))
         cv2.drawContours(img, [approx], 0, (255,0,0), 5)
-
+    
+    self.count += len(contours)
+    print("=== Report ===", "Current total count =", self.count)
 
     cv2.imshow("result", img)
     cv2.waitKey(0)
@@ -96,9 +99,9 @@ class ShapeRoom:
         self.image_raw.unregister()
 
 if __name__ == "__main__":
-    rospy.init_node("shaperoom")
-    shaperoom = ShapeRoom()
-    shaperoom.identify_shape('red', 'cube')
+    rospy.init_node("shapes_room")
+    shapesRoom = ShapesRoom()
+    shapesRoom.identify_shape('red', 'cube')
     while not rospy.is_shutdown():
         pass
     

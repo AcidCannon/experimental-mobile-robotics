@@ -2,6 +2,7 @@ import time
 import rospy
 import datetime
 import rosparam
+import read_room_number
 
 from create_map_move import Move
 from send_goal_client import SendGoalClient
@@ -27,7 +28,9 @@ def lobby():
 
     # read map on the wall and associate numbers with letters
     # save to numbered_locations.yaml
-    # TODO
+    readRoomNumber = read_room_number.ReadRoomNumber()
+    readRoomNumber.readRoomNumber(readRoomNumber.readPath)
+    readRoomNumber.writeYaml()
     # assumption: saved as yaml named numbered_locations.yaml (see file for format)
     # assumption: lobby is assinged a value of 0
     
