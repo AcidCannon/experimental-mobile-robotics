@@ -94,9 +94,10 @@ class ShapesRoom:
     
     self.count += len(contours)
     print("=== Report ===", "Current total count =", self.count)
-
-    cv2.imshow("result", img)
-    cv2.waitKey(0)
+    
+    if self.DEBUG:
+      cv2.imshow("result", img)
+      cv2.waitKey(0)
 
     def close(self):
         self.image_raw.unregister()
@@ -104,8 +105,8 @@ class ShapesRoom:
 if __name__ == "__main__":
     rospy.init_node("shapes_room")
     shapesRoom = ShapesRoom()
+    shapesRoom.DEBUG = True
     shapesRoom.identify_shape('red', 'cube')
     shapesRoom.getResult()
     while not rospy.is_shutdown():
         pass
-    

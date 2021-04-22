@@ -4,7 +4,7 @@ import rospy
 import datetime
 import rosparam
 import read_room_number
-import shape_room
+import shapes_room
 
 from create_map_move import Move
 from send_goal_client import SendGoalClient
@@ -69,8 +69,11 @@ def shapes():
     start = time.time()
 
     #### add here ####
-
-
+    rospy.init_node("shapes_room")
+    shapesRoom = shapes_room.ShapesRoom()
+    shapesRoom.identify_shape('red', 'cube')
+    #### spin ####
+    shapesRoom.getResult()
     #### end here ####
 
     end = time.time()
