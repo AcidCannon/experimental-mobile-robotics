@@ -6,4 +6,7 @@
 
     <include file="$(find competition2)/launch/competition2_server.launch" />
 
+    <!-- amcl, move_base, rviz -->
+    <include file="$(find competition2)/launch/move_base.launch" />
+
 </launch>

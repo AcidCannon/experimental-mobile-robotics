@@ -1,10 +1,14 @@
-lobby:
-  lx: 3.4
-  ly: -8.6
-a:
-  lx: -11.83
-  ly: -15.03
+# lobby: # center
+#   lx: 3.4
+#   ly: -8.6
+#   az: 3.14
+lobby: # in front of sign
+  lx: 0.7
+  ly: -8.3
   az: 3.14
+a:
+  lx: -15.9
+  ly: -15.2
 b:
   lx: -6.5
   ly: -15
@@ -17,10 +21,10 @@ d:
 e:
   lx: -15.4
   ly: -9.4
-f:
+f: # unsuccessful
   lx: -9.9
   ly: -9.2
-g: 
+g:
   lx: -4.0
   ly: -5.1
 h:

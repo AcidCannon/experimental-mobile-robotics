@@ -42,7 +42,8 @@ class SendGoalClient:
         print("\nplease wait...attempting to localize")
 
         iteration = 0
-        while (self.covariance["x"] + self.covariance["y"]) > 0.0001 and iteration < 8:
+        while (self.covariance["x"] + self.covariance["y"]) > 0.02 and iteration < 8:
+            print("covaraince:", (self.covariance["x"] + self.covariance["y"]))
             self.rotate("right", 90, z=2.0)
             iteration += 1
 
@@ -92,10 +93,12 @@ class SendGoalClient:
         t = np.radians(angle) / z
         rospy.sleep(t)
 
-    def send_goal(self, lx=0.0, ly=0.0, az=0.0):
+    def send_goal(self, location, lx, ly, az):
         """
         Send goal position to move_base action server.
 
+        location: string
+            location name
         lx: float
             linear x
         ly: float
@@ -104,7 +107,7 @@ class SendGoalClient:
             angular z (yaw) [default: 0 radians]
         """
 
-        print("\nsending goal: lx={}, ly={}, az={}".format(lx, ly, az))
+        print("\nmoving to {}".format(location))
 
         goal = MoveBaseGoal()
         goal.target_pose.header.stamp = rospy.Time.now()
@@ -122,7 +125,7 @@ class SendGoalClient:
         self.client.wait_for_result()
         result = self.client.get_result()
 
-        print("reached goal\n")
+        print("reached {}\n".format(location))
 
         return result
 
@@ -136,16 +139,19 @@ def main():
 
         while True:
 
-            input_ = input("What room would you like to navigate to?\nSelect any lowercase letter 'a' through 'q' to navigate to a room.\nType 'exit' to quit.\n")
+            input_ = input("What room would you like to navigate to?\nType any lowercase letter 'a' through 'q' to specify a room.\nType 'lobby' to navigate to the lobby.\nType 'exit' to quit.\n")
 
             if input_ == "exit":
                 break
-            elif input_ in "abcdefghijklmnopq" and len(input_) == 1:
+            elif (input_ in "abcdefghijklmnopq" and len(input_) == 1) or input_ == "lobby":
                 coordinates = sgc.locations[input_]
                 lx = coordinates["lx"]
                 ly = coordinates["ly"]
-                az = coordinates["az"]
-                sgc.send_goal(lx, ly, az)
+                if "az" in coordinates:
+                    az = coordinates["az"]
+                else:
+                    az = 0.0
+                sgc.send_goal(input_, lx, ly, az)
             else:
                 print("You entry is invalid.  Please try again.\n")
 
