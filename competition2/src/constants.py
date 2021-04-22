@@ -1,0 +1,1 @@
+MAP_NUMBER_ROOM = "/home/user/catkin_ws/src/competition2/worlds/world1/map/one.png"
