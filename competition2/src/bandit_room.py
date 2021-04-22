@@ -134,8 +134,6 @@ def main():
 
     rospy.init_node("bandit_problem_node")
 
-    start = time.time()
-
     try:
 
         br = BanditRoom()
