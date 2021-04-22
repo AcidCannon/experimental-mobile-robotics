@@ -74,6 +74,7 @@ def shapes():
     shapesRoom.identify_shape('red', 'cube')
     #### spin ####
     shapesRoom.getResult()
+    #### do somethin with next_room ####
     #### end here ####
 
     end = time.time()
