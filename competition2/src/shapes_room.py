@@ -105,6 +105,7 @@ if __name__ == "__main__":
     rospy.init_node("shapes_room")
     shapesRoom = ShapesRoom()
     shapesRoom.identify_shape('red', 'cube')
+    shapesRoom.getResult()
     while not rospy.is_shutdown():
         pass
     
