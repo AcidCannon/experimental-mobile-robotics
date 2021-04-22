@@ -15,6 +15,9 @@ class ShapesRoom:
     self.count = 0
     rospy.sleep(1)
 
+  def getResult(self):
+    return self.count
+
   def camera_callback(self, data):
     try:
         # we select bgr8 because its the OpenCV encoding by default
