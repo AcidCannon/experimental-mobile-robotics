@@ -1,8 +1,10 @@
+#! /usr/bin/python
 import time
 import rospy
 import datetime
 import rosparam
 import read_room_number
+import shape_room
 
 from create_map_move import Move
 from send_goal_client import SendGoalClient

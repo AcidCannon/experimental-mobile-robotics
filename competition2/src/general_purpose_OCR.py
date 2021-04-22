@@ -1,3 +1,4 @@
+#! /usr/bin/python
 import cv2
 import pytesseract
 import constants
