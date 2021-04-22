@@ -2,7 +2,8 @@
 
 import rospy
 import actionlib
-from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
+from gazebo_msgs.srv import SetModelState
+from geometry_msgs.msg import PoseWithCovarianceStamped, Twist, Pose
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import numpy as np
 from tf.transformations import quaternion_from_euler
@@ -42,7 +43,7 @@ class SendGoalClient:
         print("\nplease wait...attempting to localize")
 
         iteration = 0
-        while (self.covariance["x"] + self.covariance["y"]) > 0.02 and iteration < 8:
+        while (self.covariance["x"] + self.covariance["y"]) > 0.0001 and iteration < 8:
             print("covaraince:", (self.covariance["x"] + self.covariance["y"]))
             self.rotate("right", 90, z=2.0)
             iteration += 1
@@ -110,8 +111,10 @@ class SendGoalClient:
         print("\nmoving to {}".format(location))
 
         goal = MoveBaseGoal()
+
         goal.target_pose.header.stamp = rospy.Time.now()
         goal.target_pose.header.frame_id = "map"
+
         goal.target_pose.pose.position.x = lx
         goal.target_pose.pose.position.y = ly
 
@@ -128,6 +131,52 @@ class SendGoalClient:
         print("reached {}\n".format(location))
 
         return result
+
+    def teleport(self, location, lx, ly, az):
+        """
+        Teleport robot's position.
+
+        location: string
+            location name
+        lx: float
+            linear x
+        ly: float
+            linear y
+        az: float
+            angular z (yaw) [default: 0 radians]
+        """
+
+        rospy.wait_for_service("/gazebo/set_model_state")
+
+        set_model_state = rospy.ServiceProxy("/gazebo/set_model_state", SetModelState)
+
+        model_state = SetModelState()
+
+        model_state.model_name = "mobile_base"
+
+        pose = Pose()
+        pose.position.x = lx
+        pose.position.y = ly
+        
+        orientation = quaternion_from_euler(0, 0, az)
+        pose.orientation.x = orientation[0]
+        pose.orientation.y = orientation[1]
+        pose.orientation.z = orientation[2]
+        pose.orientation.w = orientation[3]
+
+        model_state.pose = pose
+
+        twist = Twist()
+        twist.linear.x = 0.0
+        twist.angular.z = 0.0
+
+        model_state.twist = twist
+
+        model_state.reference_frame = "map"
+
+        set_model_state(model_state)
+
+        self.localize()
 
 def main():
 
@@ -151,7 +200,8 @@ def main():
                     az = coordinates["az"]
                 else:
                     az = 0.0
-                sgc.send_goal(input_, lx, ly, az)
+                # sgc.send_goal(input_, lx, ly, az)
+                sgc.teleport(input_, lx, ly, az)
             else:
                 print("You entry is invalid.  Please try again.\n")
 
