@@ -4,11 +4,24 @@ import pytesseract
 import rospy
 import constants
 
-class ReadMap:
+class ReadRoomNumber:
     def __init__(self):
-        self.path = constants.MAP_NUMBER_ROOM
+        self.readPath = constants.MAP_NUMBER_ROOM
+        self.writePath = constants.NUMBERED_LOCATIONS
 
-    def readmap(self, path):
+    def writeYaml(self):
+        if not self.result:
+            pass
+        else:
+            keys = list(self.result.keys())
+            keys.pop(-1)
+            with open(self.writePath, 'a') as f:
+                f.write("0: lobby\n")
+                for key in keys:
+                    f.write(self.result[key]+": "+key+'\n')
+        print("=== Report === Write room number pair to yaml.")
+
+    def readRoomNumber(self, path):
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         _, img = cv2.threshold(img, 230, 255, cv2.THRESH_BINARY_INV)
         result = {}
@@ -36,6 +49,7 @@ class ReadMap:
             'q': [(590,602), (760,758)],
             'LOBBY':[(166,404), (276,555)]
         }
+        print("=== Report === Read room number map from png file.")
         for key in crop_coord.keys():
             col_beginning = crop_coord[key][0][0]
             row_beginning = crop_coord[key][0][1]
@@ -48,9 +62,11 @@ class ReadMap:
             # cv2.imshow("img", cropped)
             # cv2.waitKey(0)
             result[key] = x
+            self.result = result
         return result
 
 if __name__ == "__main__":
-  readmap = ReadMap()
-  result = readmap.readmap(readmap.path)
+  readRoomNumber = ReadRoomNumber()
+  result = readRoomNumber.readRoomNumber(readRoomNumber.readPath)
   print(result)
+  readRoomNumber.writeYaml()
