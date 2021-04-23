@@ -189,6 +189,12 @@ def maze():
 
     return next_room, who
 
+def test_traverse():
+
+    send_goal_client.localize()
+    send_goal_client.teleport(0)
+    # send_goal_client.traverse(3)
+
 if __name__ == "__main__":
 
     rospy.init_node("main_node")
@@ -197,38 +203,41 @@ if __name__ == "__main__":
     print("\nstarting program\n")
     main_start = time.time()
 
-    # clue
-    who = "Joe"
-    where = "kitchen"
-    what = "frying pan"
-
     # initialize classes
     bandit_room = UCBBanditRoom()
     move = Move()
     send_goal_client = SendGoalClient()
+
+    # TODO remove if running
+    # test_traverse()
+
+    # clue
+    who = "Joe"
+    where = "kitchen"
+    what = "frying pan"
 
     # localize
     # send_goal_client.localize()
 
     # lobby
     # send_goal_client.traverse(0)
-    while input("\n\nWould you like to start the lobby task?\n") == "y":
-        next_room = lobby()
+    # while input("\n\nWould you like to start the lobby task?\n") == "y":
+    #     next_room = lobby()
 
     # shape room
     # send_goal_client.traverse(next_room)
-    while input("\n\nWould you like to start the shapes task?\n") == "y":
-        next_room, what = shapes()
+    # while input("\n\nWould you like to start the shapes task?\n") == "y":
+    #     next_room, what = shapes()
 
     # bandit room
     # send_goal_client.traverse(next_room)
-    while input("\n\nWould you like to start the bandits task?\n") == "y":
-        next_room, where = bandits()
+    # while input("\n\nWould you like to start the bandits task?\n") == "y":
+    #     next_room, where = bandits()
 
     # maze room
     # send_goal_client.traverse(next_room)
-    while input("\n\nWould you like to start the maze room?\n") == "y":
-        next_room, who = maze()
+    # while input("\n\nWould you like to start the maze room?\n") == "y":
+    #     next_room, who = maze()
 
     # solution reading room
     # send_goal_client.traverse(next_room)
