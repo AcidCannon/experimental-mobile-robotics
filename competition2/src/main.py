@@ -202,7 +202,7 @@ if __name__ == "__main__":
     # test() # TODO remove
 
     # lobby
-    send_goal_client.traverse(0)
+    # send_goal_client.traverse(0)
     next_room = lobby()
 
     # # shape room
@@ -211,7 +211,7 @@ if __name__ == "__main__":
 
     # # bandit room
     # send_goal_client.traverse(next_room)
-    # next_room = bandits
+    next_room = bandits()
 
     # # maze room
     # send_goal_client.traverse(next_room)
