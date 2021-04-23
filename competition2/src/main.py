@@ -4,10 +4,14 @@ import datetime
 import rosparam
 import yaml
 
+from pathlib import Path
+
 from move import Move
 from send_goal_client import SendGoalClient
 from bandit_room import BanditRoom
 import mazecrawler
+from ucb_bandit_room import UCBBanditRoom
+
 
 def lobby():
     """
@@ -26,33 +30,41 @@ def lobby():
         return next_room
 
     next_room = read_clue()
-    while input("\nThe clue reads {}.  Is this correct?\n".format(next_room)) == "n":
-        if input("\nWould you like to attempt to use opencv to read the clue again\n?") == "y":
+    while input("\n\nThe clue reads {}.  Is this correct?\n".format(next_room)) == "n":
+        if input("\n\nWould you like to attempt to use opencv to read the clue again\n?") == "y":
             next_room = read_clue()
         else:
-            next_room = input("\nManually enter the clue.  Please enter either 'highest' or 'lowest'.\n")
+            next_room = input("\n\nManually enter the clue.  Please enter either 'highest' or 'lowest'.\n")
 
     # TODO read map on the wall and associate numbers with letters
-    # assumption: saved as yaml named numbered_locations.yaml (see file for format)
+    # assumption: saved as dictionary (see numbered_locations.yaml for format)
     # assumption: lobby is assinged a value of 0
     def read_map():
+        """
+        Extract room numbers from the map.
+
+        @return numbered_locations: dict {int: string}
+        """
 
         # add here
 
 
         # end here
 
-        numbered_locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
-        print("\nroom assignments:")
-        print(numbered_locations, "\n")
+        numbered_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
+
+        return numbered_locations
 
 
-    read_map()
+    numbered_locations = read_map()
+    print("\n\nroom assignments:")
+    print(numbered_locations, "\n")
+
     while input("\nAre the numbered room assignments correct?\n") == "n":
-        if input("\nWould you like to attempt to use opencv to read the map again?\n") == "y":
-            read_map()
+        if input("\n\nWould you like to attempt to use opencv to read the map again?\n") == "y":
+            numbered_locations = read_map()
         else:
-            input_locations = input("\nManually enter the locations.  Please enter them in the from '1a,2b,3c,4d,...', with no spacing.\n")
+            input_locations = input("\n\nManually enter the locations.  Please enter them in the from '1a,2b,3c,4d,...', with no spacing.\n")
             input_locations = input_locations.split(",")
             numbered_locations = {}
             for location in input_locations:
@@ -60,13 +72,15 @@ def lobby():
                     number = 0
                     letter = "lobby"
                 else:
-                    number = location[:-1]
+                    number = int(location[:-1])
                     letter = location[-1]
                 numbered_locations[number] = letter
-            with open("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml", "w") as f:
-                yaml.dump(numbered_locations, f)
-        print("\nroom assignments:")
+        print("\n\nroom assignments:")
         print(numbered_locations, "\n")
+
+    # save to file
+    with open(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml", "w") as f:
+        yaml.dump(numbered_locations, f)
 
     # reload yaml into send_goal_client class
     send_goal_client.numbered_locations = numbered_locations
@@ -82,7 +96,7 @@ def lobby():
 
     end = time.time()
     completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
-    print("\ntime to complete lobby: {} h:mm:ss\n".format(completion_time))
+    print("\n\ntime to complete lobby: {} h:mm:ss\n".format(completion_time))
 
     return next_room
 
@@ -97,6 +111,9 @@ def shapes():
 
     #### add here ####
 
+    next_room = 0  # TODO remove
+    what = "frying pan"  # TODO remove
+
 
     #### end here ####
 
@@ -104,7 +121,7 @@ def shapes():
     completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
     print("\ntime to complete shapes room: {} h:mm:ss\n".format(completion_time))
 
-    return next_room
+    return next_room, what
 
 def bandits():
     """
@@ -120,7 +137,7 @@ def bandits():
     def read_clue():
 
         passcode = 42
-        num_arms = 7
+        num_arms = 8
 
         # TODO read passcode and num_arms from the clue
         # passcode [1,99]
@@ -131,16 +148,16 @@ def bandits():
     passcode, num_arms = read_clue()
 
     # check input
-    while input("\nThe clue reads: passcode {}, num_rooms {}.  Is this correct?\n".format(passcode, num_arms)) == "n":
-        if input("\nWould you like to attempt to use opencv to read the clue again?\n") == "y":
+    while input("\n\nThe clue reads: passcode {}, num_rooms {}.  Is this correct?\n".format(passcode, num_arms)) == "n":
+        if input("\n\nWould you like to attempt to use opencv to read the clue again?\n") == "y":
             passcode, num_arms = read_clue()
         else:
-            passcode = int(input("\nManually enter the clue.  Please enter the passcode.\n"))
-            num_arms = int(input("\nManually enter the clue.  Please enter the num_arms.\n"))
+            print("\n\nManually obtaining the clue from the parameter server.")
+            passcode = rosparam.get_param("/competition2_server/bandit_passcode")
+            num_arms = rosparam.get_param("/competition2_server/bandit_num_arms")
+            print("Passcode is {}.  Number of arms is {}.".format(passcode, num_arms))
 
-    bandit_room.init_algorithm(passcode, num_arms)
-    bandit_room.run_algorithm()
-    next_room, where = bandit_room.close_algorithm()
+    next_room, where = bandit_room.run_algorithm(passcode, num_arms)
 
     #### end here ####
 
@@ -148,7 +165,7 @@ def bandits():
     completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
     print("\ntime to complete bandit room: {} h:mm:ss\n".format(completion_time))
 
-    return next_room
+    return next_room, where
 
 def maze():
     """
@@ -162,14 +179,23 @@ def maze():
     #### add here ####
     mazecrawler.main()
 
+    next_room = 0 # TODO remove
+    who = "Joe" # TODO remove
+
+
     #### end here ####
 
     end = time.time()
     completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
     print("\ntime to complete maze room: {} h:mm:ss\n".format(completion_time))
 
-    return next_room
+    return next_room, who
 
+def test_traverse():
+
+    send_goal_client.localize()
+    send_goal_client.teleport(0)
+    # send_goal_client.traverse(3)
 
 if __name__ == "__main__":
 
@@ -180,32 +206,51 @@ if __name__ == "__main__":
     main_start = time.time()
 
     # initialize classes
-    bandit_room = BanditRoom()
+    bandit_room = UCBBanditRoom()
     move = Move()
     send_goal_client = SendGoalClient()
+
+    # TODO remove if running
+    # test_traverse()
+
+    # clue
+    who = "Joe"
+    where = "kitchen"
+    what = "frying pan"
 
     # localize
     # send_goal_client.localize()
 
     # lobby
     # send_goal_client.traverse(0)
-    # next_room = lobby()
+    # while input("\n\nWould you like to start the lobby task?\n") == "y":
+    #     next_room = lobby()
 
-    # # shape room
+    # shape room
     # send_goal_client.traverse(next_room)
-    # next_room = shapes()
+    # while input("\n\nWould you like to start the shapes task?\n") == "y":
+    #     next_room, what = shapes()
 
-    # # bandit room
+    # bandit room
     # send_goal_client.traverse(next_room)
-    next_room = bandits()
+    # while input("\n\nWould you like to start the bandits task?\n") == "y":
+    #     next_room, where = bandits()
 
-    # # maze room
+    # maze room
     # send_goal_client.traverse(next_room)
-    # next_room = maze()
+    # while input("\n\nWould you like to start the maze room?\n") == "y":
+    #     next_room, who = maze()
+
+    # solution reading room
+    # send_goal_client.traverse(next_room)
+    print("\n\nfinal solution:")
+    print("who:", who)
+    print("what:", what)
+    print("where:", where)
 
     # program end time
-    print("\nending program\n")
+    print("\n\nending program\n")
     main_end = time.time()
 
     completion_time = str(datetime.timedelta(seconds=(main_end - main_start))).split(".")[0]
-    print("\ntime to complete program: {} h:mm:ss\n".format(completion_time))
+    print("\n\ntime to complete program: {} h:mm:ss\n".format(completion_time))

@@ -66,7 +66,7 @@ class BanditRoom:
             return a
 
         # problem complexity increases with the num_arms
-        while np.max(delta_qs) > 0.001:
+        while np.max(delta_qs) > 0.0001:
 
             action = policy()
 
