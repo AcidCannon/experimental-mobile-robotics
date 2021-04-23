@@ -3,7 +3,7 @@ recovery_behaviour_enabled: true
 # clearing_rotation_allowed: true # todo
 
 NavfnROS:
-  allow_unknown: true # Specifies whether or not to allow navfn to create plans that traverse unknown space.
+  allow_unknown: true # Specifies whether or not to allow navfn to create plans that traverse unknown space. TODO
   default_tolerance: 0.1 # A tolerance on the goal point for the planner.
 
 TrajectoryPlannerROS:
@@ -69,8 +69,8 @@ DWAPlannerROS:
   min_rot_vel: 0.2
 
   # Goal Tolerance Parameters
-  yaw_goal_tolerance: 0.1
-  xy_goal_tolerance: 0.2
+  yaw_goal_tolerance: 0.2 # todo
+  xy_goal_tolerance: 0.25 # todo
   latch_xy_goal_tolerance: false
 
   # # Forward Simulation Parameters

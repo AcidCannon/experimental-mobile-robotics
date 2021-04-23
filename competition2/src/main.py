@@ -5,8 +5,9 @@ import datetime
 import rosparam
 import read_room_number
 import shapes_room
+import yaml
 
-from create_map_move import Move
+from move import Move
 from send_goal_client import SendGoalClient
 from bandit_room import BanditRoom
 
@@ -22,16 +23,53 @@ def lobby():
 
     #### add here ####
 
-    # read clue on the wall and get next room to move to
-    # print 'highest' or 'lowest'
-    # TODO
-    next_room = "highest" # should be a string: 'highest' or 'lowest'
-    print("\nclue: traverse to {} numbered room\n".format(next_room))
-    
-    # print out letter/number associations using images/figure5.jpg
-    numbered_locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
-    print("\nroom assignments:")
-    print(numbered_locations, "\n")
+    # TODO read clue on the wall and save as next_room
+    def read_clue():
+        next_room = "highest" # replace this line
+        return next_room
+
+    next_room = read_clue()
+    while input("\nThe clue reads {}.  Is this correct?\n".format(next_room)) == "n":
+        if input("\nWould you like to attempt to use opencv to read the clue again\n?") == "y":
+            next_room = read_clue()
+        else:
+            next_room = input("\nManually enter the clue.  Please enter either 'highest' or 'lowest'.\n")
+
+    # TODO read map on the wall and associate numbers with letters
+    # assumption: saved as yaml named numbered_locations.yaml (see file for format)
+    # assumption: lobby is assinged a value of 0
+    def read_map():
+
+        # add here
+
+
+        # end here
+
+        numbered_locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
+        print("\nroom assignments:")
+        print(numbered_locations, "\n")
+
+
+    read_map()
+    while input("\nAre the numbered room assignments correct?\n") == "n":
+        if input("\nWould you like to attempt to use opencv to read the map again?\n") == "y":
+            read_map()
+        else:
+            input_locations = input("\nManually enter the locations.  Please enter them in the from '1a,2b,3c,4d,...', with no spacing.\n")
+            input_locations = input_locations.split(",")
+            numbered_locations = {}
+            for location in input_locations:
+                if location == "0lobby":
+                    number = 0
+                    letter = "lobby"
+                else:
+                    number = location[:-1]
+                    letter = location[-1]
+                numbered_locations[number] = letter
+            with open("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml", "w") as f:
+                yaml.dump(numbered_locations, f)
+        print("\nroom assignments:")
+        print(numbered_locations, "\n")
 
     # reload yaml into send_goal_client class
     send_goal_client.numbered_locations = numbered_locations
@@ -85,6 +123,30 @@ def bandits():
 
     #### add here ####
 
+    def read_clue():
+
+        passcode = 42
+        num_arms = 7
+
+        # TODO read passcode and num_arms from the clue
+        # passcode [1,99]
+        # num_arms [2,8]
+
+        return passcode, num_arms
+
+    passcode, num_arms = read_clue()
+
+    # check input
+    while input("\nThe clue reads: passcode {}, num_rooms {}.  Is this correct?\n".format(passcode, num_arms)) == "n":
+        if input("\nWould you like to attempt to use opencv to read the clue again?\n") == "y":
+            passcode, num_arms = read_clue()
+        else:
+            passcode = int(input("\nManually enter the clue.  Please enter the passcode.\n"))
+            num_arms = int(input("\nManually enter the clue.  Please enter the num_arms.\n"))
+
+    bandit_room.init_algorithm(passcode, num_arms)
+    bandit_room.run_algorithm()
+    next_room, where = bandit_room.close_algorithm()
 
     #### end here ####
 
@@ -115,7 +177,6 @@ def maze():
     return next_room
 
 
-
 if __name__ == "__main__":
 
     rospy.init_node("main_node")
@@ -133,28 +194,28 @@ if __name__ == "__main__":
     # assumption: lobby is assinged a value of 0
 
     # initialize classes
+    bandit_room = BanditRoom()
     move = Move()
     send_goal_client = SendGoalClient()
-    bandit_room = BanditRoom()
 
     # localize
-    send_goal_client.localize()
+    # send_goal_client.localize()
 
     # lobby
-    send_goal_client.traverse(0)
-    next_room = lobby()
+    # send_goal_client.traverse(0)
+    # next_room = lobby()
 
-    # shape room
-    send_goal_client.traverse(next_room)
-    next_room = shapes()
+    # # shape room
+    # send_goal_client.traverse(next_room)
+    # next_room = shapes()
 
-    # bandit room
-    send_goal_client.traverse(next_room)
-    next_room = bandits
+    # # bandit room
+    # send_goal_client.traverse(next_room)
+    next_room = bandits()
 
-    # maze room
-    send_goal_client.traverse(next_room)
-    next_room = maze()
+    # # maze room
+    # send_goal_client.traverse(next_room)
+    # next_room = maze()
 
     # program end time
     print("\nending program\n")
@@ -162,9 +223,3 @@ if __name__ == "__main__":
 
     completion_time = str(datetime.timedelta(seconds=(main_end - main_start))).split(".")[0]
     print("\ntime to complete program: {} h:mm:ss\n".format(completion_time))
-
-
-
-
-
-
