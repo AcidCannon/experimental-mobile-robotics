@@ -117,6 +117,37 @@ def bandits():
 
     #### add here ####
 
+    def read_clue():
+
+        passcode = 42
+        num_arms = 2
+
+        # TODO read passcode and num_arms from the clue
+        # passcode [1,99]
+        # num_arms [2,8]
+
+        return passcode, num_arms
+
+    passcode, num_arms = read_clue()
+
+    # check input
+    while input("\nThe clue reads: passcode {}, num_rooms {}.  Is this correct?\n".format(passcode, num_arms)) == "n":
+        if input("\nWould you like to attempt to use opencv to read the clue again\n?") == "y":
+            passcode, num_arms = read_clue()
+        else:
+            passcode = int(input("\nManually enter the clue.  Please enter either the passcode.\n"))
+            num_rooms = int(input("\nManually enter the clue.  Please enter either the num_rooms.\n"))
+
+    try:
+
+        bandit_room = BanditRoom()
+        bandit_room.init_algorithm()
+        bandit_room.run_algorithm()
+        bandit_room.close_algorithm()
+
+    except rospy.ServiceException as e:
+
+        print(e)
 
     #### end here ####
 
@@ -164,7 +195,6 @@ if __name__ == "__main__":
     # initialize classes
     move = Move()
     send_goal_client = SendGoalClient()
-    bandit_room = BanditRoom()
 
     # localize
     send_goal_client.localize()
@@ -193,9 +223,3 @@ if __name__ == "__main__":
 
     completion_time = str(datetime.timedelta(seconds=(main_end - main_start))).split(".")[0]
     print("\ntime to complete program: {} h:mm:ss\n".format(completion_time))
-
-
-
-
-
-

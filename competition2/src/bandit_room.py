@@ -24,29 +24,26 @@ class BanditRoom:
         self.q = None
         self.n = None
 
-        self.epsilon = 0.05
+        self.epsilon = 0.1
         self.t = 0
-        self.timesteps_per_arm = 5000
 
-    def init_algorithm(self): # TODO
+    def init_algorithm(self, passcode, num_arms): # TODO
         """
         Save the passcode and num_arms.
+
+        @param passcode: int
+        @param num_arms: int
         """
 
-        # print("\ninitializing algorithm")
-
-        # need passcode
-        self.passcode = int(input("\nEnter the passcode, then hit enter.\n"))
-
-        # need num_arms
-        self.num_arms = int(input("\nEnter the number of arms, then hit enter.\n"))
+        self.passcode = passcode
+        self.num_arms = num_arms
 
         self.q = np.zeros(self.num_arms)
         self.n = np.zeros(self.num_arms)
 
     def run_algorithm(self):
 
-        # print("\nrunning algorithm")
+        delta_qs = np.zeros(20)
 
         def policy():
             """
@@ -66,48 +63,34 @@ class BanditRoom:
             return a
 
         # problem complexity increases with the num_arms
-        while self.t < (self.num_arms * self.timesteps_per_arm):
+        while np.max(delta_qs) > 0.02:
 
-            action = policy() 
+            action = policy()
 
             response = self.bandit_step_client(self.passcode, action+1) # must increment since actions are >= 1
             reward = response.reward
             valid = response.valid
 
-            # check to make sure passcode and action is valid; update it again
-            attempt = 1
-            max_attempts = 2
-            while not valid and attempt <= max_attempts:
-                print(attempt)
-                print("\neither passcode or num_arms is invalid")
-                print("attempt {} / {}".format(attempt, max_attempts))
-                self.init_algorithm()
-                action = policy()
-                response = self.bandit_step_client(self.passcode, action+1)
-                reward = response.reward
-                valid = response.valid
-
-                if attempt == max_attempts:
-                    print("\nmax attempts reached")
-                    return
-                attempt += 1
 
             self.n[action] += 1
-            self.q[action] += (1. / self.n[action]) * (reward - self.q[action])
+
+            delta_q = (1. / self.n[action]) * (reward - self.q[action])
+            delta_qs[self.t % 20] = delta_q
+
+            self.q[action] += delta_q
 
             self.t += 1
+
+        print("\nlearning complete.  timesteps: {}.\n".format(self.t))
 
     def close_algorithm(self):
         """
         Submit the answer.
         """
 
-        # print("\nclosing algorithm")
-
         arm = np.where(self.q == np.max(self.q))[0]
 
         while len(arm) > 1:
-            self.timesteps_per_arm += 100
             self.run_algorithm()
 
         response = self.bandit_answer_client(arm[0]+1)
@@ -130,29 +113,29 @@ class BanditRoom:
             a += 1
 
 
-def main():
-
-    rospy.init_node("bandit_problem_node")
-
-    try:
-
-        br = BanditRoom()
-        br.init_algorithm()
-        br.run_algorithm()
-        br.close_algorithm()
-
-    except rospy.ServiceException as e:
-
-        print(e)
-    
-    end = time.time()
-
-    completion_time = end - start
-    completion_time = str(datetime.timedelta(seconds=completion_time)).split(".")[0]
-
-    print("\ntime to complete bandits room: {} h:mm:ss".format(completion_time))
-
-
-if __name__ == "__main__":
-
-    main()
+# def main():
+#
+#     rospy.init_node("bandit_problem_node")
+#
+#     try:
+#
+#         br = BanditRoom()
+#         br.init_algorithm()
+#         br.run_algorithm()
+#         br.close_algorithm()
+#
+#     except rospy.ServiceException as e:
+#
+#         print(e)
+#
+#     end = time.time()
+#
+#     completion_time = end - start
+#     completion_time = str(datetime.timedelta(seconds=completion_time)).split(".")[0]
+#
+#     print("\ntime to complete bandits room: {} h:mm:ss".format(completion_time))
+#
+#
+# if __name__ == "__main__":
+#
+#     main()

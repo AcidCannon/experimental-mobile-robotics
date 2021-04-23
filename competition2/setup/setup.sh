@@ -19,7 +19,8 @@ echo 'alias update="cp -r ~/catkin_ws/src/competition2/* ~/catkin_ws/experimenta
 echo 'alias copysetup="cp ~/catkin_ws/src/competition2/setup/setup.sh ~/setup.sh"'  >> ~/.bashrc
 echo 'alias s="git status"' >> ~/.bashrc
 echo 'alias commit="git commit -m"' >> ~/.bashrc
-echo 'alias push="git push origin sheila"'  >> ~/.bashrc
+echo 'alias push="git push origin sheila"' >> ~/.bashrc
+echo 'alias pull="git pull origin sheila"' >> ~/.bashrc
 echo 'function fgit() {
   git config --global user.email "sschoepp@ualberta.ca";
   git config --global user.name "Sheila Schoepp";
