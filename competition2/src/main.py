@@ -27,14 +27,6 @@ def lobby():
     # TODO
     next_room = "highest" # should be a string: 'highest' or 'lowest'
     print("\nclue: traverse to {} numbered room\n".format(next_room))
-
-    # read map on the wall and associate numbers with letters
-    # save to numbered_locations.yaml
-    readRoomNumber = read_room_number.ReadRoomNumber()
-    readRoomNumber.readRoomNumber(readRoomNumber.readPath)
-    readRoomNumber.writeYaml()
-    # assumption: saved as yaml named numbered_locations.yaml (see file for format)
-    # assumption: lobby is assinged a value of 0
     
     # print out letter/number associations using images/figure5.jpg
     numbered_locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
@@ -69,7 +61,6 @@ def shapes():
     start = time.time()
 
     #### add here ####
-    rospy.init_node("shapes_room")
     shapesRoom = shapes_room.ShapesRoom()
     shapesRoom.identify_shape('red', 'cube')
     #### spin ####
@@ -132,6 +123,14 @@ if __name__ == "__main__":
     # start program
     print("\nstarting program\n")
     main_start = time.time()
+
+    # read map on the wall and associate numbers with letters
+    # save to numbered_locations.yaml
+    readRoomNumber = read_room_number.ReadRoomNumber()
+    readRoomNumber.readRoomNumber(readRoomNumber.readPath)
+    readRoomNumber.writeYaml()
+    # assumption: saved as yaml named numbered_locations.yaml (see file for format)
+    # assumption: lobby is assinged a value of 0
 
     # initialize classes
     move = Move()
