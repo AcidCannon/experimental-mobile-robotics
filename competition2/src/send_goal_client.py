@@ -153,11 +153,10 @@ class SendGoalClient:
         az = 0.0
         if "az" in self.locations[location]:
             az = self.locations[location]["az"]
-        
+
         pose = PoseWithCovarianceStamped()
 
-        pose.header.stamp = rospy.Time.now()
-        pose.header.frame_id = "/map"
+        pose.header.frame_id = "map"
 
         pose.pose.pose.position.x = lx
         pose.pose.pose.position.y = ly

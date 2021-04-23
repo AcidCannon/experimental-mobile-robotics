@@ -192,7 +192,13 @@ def maze():
 def test_traverse():
 
     send_goal_client.localize()
-    send_goal_client.teleport(0)
+    send_goal_client.traverse(0)
+    send_goal_client.teleport(1)
+    send_goal_client.localize()
+    send_goal_client.traverse(0)
+    send_goal_client.teleport(2)
+    send_goal_client.localize()
+    send_goal_client.traverse(1)
     # send_goal_client.traverse(3)
 
 if __name__ == "__main__":
@@ -209,7 +215,7 @@ if __name__ == "__main__":
     send_goal_client = SendGoalClient()
 
     # TODO remove if running
-    # test_traverse()
+    test_traverse()
 
     # clue
     who = "Joe"
