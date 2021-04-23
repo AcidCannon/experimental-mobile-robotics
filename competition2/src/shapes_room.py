@@ -23,9 +23,9 @@ class ShapesRoom:
         # we select bgr8 because its the OpenCV encoding by default
         image = self.bridge_object.imgmsg_to_cv2(data, desired_encoding="bgr8")
         self.image = image
-        # for test
-        if self.DEBUG:
-            rospy.loginfo(self.identify_shape()[0])
+        # # for test
+        # if self.DEBUG:
+        #     rospy.loginfo(self.identify_shape()[0])
     except CvBridgeError as e:
         rospy.loginfo(e)
 

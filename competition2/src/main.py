@@ -6,6 +6,10 @@ import rosparam
 import read_room_number
 import shapes_room
 import yaml
+import stitch_image
+import read_clue as clue
+import os
+import constants
 
 from move import Move
 from send_goal_client import SendGoalClient
@@ -22,10 +26,15 @@ def lobby():
     start = time.time()
 
     #### add here ####
-
     # TODO read clue on the wall and save as next_room
     def read_clue():
-        next_room = "highest" # replace this line
+        # stitchImage = stitch_image.StitchImage()
+        # stitchImage.DEBUG = True
+        # stitchImage.preStitch()
+        # stitchImage.stitch()
+        print("=== Report === Read from png")
+        readClue = clue.ReadClue()
+        next_room = readClue.lobby() # replace this line
         return next_room
 
     next_room = read_clue()
@@ -35,20 +44,13 @@ def lobby():
         else:
             next_room = input("\nManually enter the clue.  Please enter either 'highest' or 'lowest'.\n")
 
-    # TODO read map on the wall and associate numbers with letters
+    # read map on the wall and associate numbers with letters
     # assumption: saved as yaml named numbered_locations.yaml (see file for format)
     # assumption: lobby is assinged a value of 0
     def read_map():
-
-        # add here
-
-
-        # end here
-
         numbered_locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
         print("\nroom assignments:")
         print(numbered_locations, "\n")
-
 
     read_map()
     while input("\nAre the numbered room assignments correct?\n") == "n":
@@ -97,13 +99,23 @@ def shapes():
     """
 
     start = time.time()
-
+    
+    # stitchImage = stitch_image.StitchImage()
+    # stitchImage.DEBUG = True
+    # stitchImage.preStitch()
+    # stitchImage.stitch()
+    print("=== Report === Read from png")
+    readClue = clue.ReadClue()
+    next_room = readClue.shapes() # replace this line
+    
     #### add here ####
     shapesRoom = shapes_room.ShapesRoom()
-    shapesRoom.identify_shape('red', 'cube')
+    shapesRoom.identify_shape(next_room[0], next_room[1])
     #### spin ####
     shapesRoom.getResult()
     #### do somethin with next_room ####
+    count = shapesRoom.getResult()
+    next_room = 19
     #### end here ####
 
     end = time.time()
@@ -131,7 +143,16 @@ def bandits():
         # TODO read passcode and num_arms from the clue
         # passcode [1,99]
         # num_arms [2,8]
-
+        # stitchImage = stitch_image.StitchImage()
+        # stitchImage.DEBUG = True
+        # stitchImage.preStitch()
+        # stitchImage.stitch()
+        print("=== Report === Read from png")
+        readClue = clue.ReadClue()
+        next_room = readClue.bandit() # replace this line    
+        if len(next_room) == 2:
+            passcode = next_room[0]
+            num_arms = next_room[1]
         return passcode, num_arms
 
     passcode, num_arms = read_clue()
@@ -178,20 +199,24 @@ def maze():
 
 
 if __name__ == "__main__":
-
+    print("=== Detect Tesseract ===")
+    os.system("./install.sh")
+    print("=== Preparing ===")
+    print("=== Removing previous room number correspondence ===")
+    os.system("rm " + constants.NUMBERED_LOCATIONS)
+    print("=== Removing previous stitched images ===")
+    os.system("rm -rf " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
+    os.system("mkdir -p " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
+    print("=== Prepare complete ===")
     rospy.init_node("main_node")
 
     # start program
     print("\nstarting program\n")
     main_start = time.time()
 
-    # read map on the wall and associate numbers with letters
-    # save to numbered_locations.yaml
     readRoomNumber = read_room_number.ReadRoomNumber()
     readRoomNumber.readRoomNumber(readRoomNumber.readPath)
     readRoomNumber.writeYaml()
-    # assumption: saved as yaml named numbered_locations.yaml (see file for format)
-    # assumption: lobby is assinged a value of 0
 
     # initialize classes
     bandit_room = BanditRoom()
@@ -199,15 +224,15 @@ if __name__ == "__main__":
     send_goal_client = SendGoalClient()
 
     # localize
-    # send_goal_client.localize()
+    send_goal_client.localize()
 
     # lobby
-    # send_goal_client.traverse(0)
-    # next_room = lobby()
+    send_goal_client.traverse(0)
+    next_room = lobby()
 
     # # shape room
-    # send_goal_client.traverse(next_room)
-    # next_room = shapes()
+    send_goal_client.traverse(next_room)
+    next_room = shapes()
 
     # # bandit room
     # send_goal_client.traverse(next_room)
