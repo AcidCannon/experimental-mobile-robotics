@@ -7,7 +7,7 @@ import yaml
 from move import Move
 from send_goal_client import SendGoalClient
 from bandit_room import BanditRoom
-
+import mazecrawler
 
 def lobby():
     """
@@ -160,7 +160,7 @@ def maze():
     start = time.time()
 
     #### add here ####
-
+    mazecrawler.main()
 
     #### end here ####
 
