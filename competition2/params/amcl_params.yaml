@@ -29,7 +29,7 @@ gui_publish_rate: 10.0
 use_map_topic: true
 
 # maximum scan range to be considered; -1.0 will cause the laser's reported maximum range to be used
-laser_max_range: 12.0
+laser_max_range: -1.0 # TODO
 # how many evenly-spaced beams in each scan to be used when updating the filter
 laser_max_beams: 60
 
