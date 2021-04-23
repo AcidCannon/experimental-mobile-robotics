@@ -8,6 +8,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import numpy as np
 from tf.transformations import quaternion_from_euler
 import rosparam
+from pathlib import Path
 
 class SendGoalClient:
 
@@ -15,8 +16,8 @@ class SendGoalClient:
 
         self.client = actionlib.SimpleActionClient("/move_base", MoveBaseAction)
         self.client.wait_for_server()
-        self.locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/locations.yaml")[0][0]
-        self.numbered_locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
+        self.locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/locations.yaml")[0][0]
+        self.numbered_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
 
         self.cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
         self.twist = Twist()
@@ -27,6 +28,8 @@ class SendGoalClient:
         # wait for covariance subscriber to receive data
         while len(self.covariance) != 3:
             pass
+
+        self.initial_pose = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=10)
 
     def amcl_pose_callback(self, data):
 
@@ -81,7 +84,7 @@ class SendGoalClient:
         left: +w
         right: -w
         """
-        
+
         v = 0
 
         if direction == "left":
@@ -101,7 +104,7 @@ class SendGoalClient:
         location: int
             location number
         """
-        
+
         if location == 0:
             print("\nmoving to lobby")
         else:
@@ -134,9 +137,40 @@ class SendGoalClient:
         self.client.wait_for_result()
         result = self.client.get_result()
 
-        print("reached {}\n".format(location))
+        print("room reached.\n")
 
     def teleport(self, location):
+
+        if location == 0:
+            print("\nteleporting to lobby")
+        else:
+            print("\nteleporting to room {}".format(location))
+        location = self.numbered_locations[location]
+
+        # get location data
+        lx = self.locations[location]["lx"]
+        ly = self.locations[location]["ly"]
+        az = 0.0
+        if "az" in self.locations[location]:
+            az = self.locations[location]["az"]
+        
+        pose = PoseWithCovarianceStamped()
+
+        pose.header.stamp = rospy.Time.now()
+        pose.header.frame_id = "/map"
+
+        pose.pose.pose.position.x = lx
+        pose.pose.pose.position.y = ly
+
+        orientation = quaternion_from_euler(0, 0, az)
+        pose.pose.pose.orientation.x = orientation[0]
+        pose.pose.pose.orientation.y = orientation[1]
+        pose.pose.pose.orientation.z = orientation[2]
+        pose.pose.pose.orientation.w = orientation[3]
+
+        self.initial_pose.publish(pose)
+
+    def teleport_old(self, location):
         """
         Teleport robot's position.
 
@@ -169,7 +203,7 @@ class SendGoalClient:
         pose = Pose()
         pose.position.x = lx
         pose.position.y = ly
-        
+
         orientation = quaternion_from_euler(0, 0, az)
         pose.orientation.x = orientation[0]
         pose.orientation.y = orientation[1]
@@ -189,38 +223,3 @@ class SendGoalClient:
         set_model_state(model_state)
 
         print("reached {}\n".format(location))
-
-# def main():
-
-#     try:
-
-#         rospy.init_node("send_goal_client_node")
-
-#         sgc = SendGoalClient()
-
-#         while True:
-
-#             input_ = input("What room would you like to navigate to?\nType any lowercase letter 'a' through 'q' to specify a room.\nType 'lobby' to navigate to the lobby.\nType 'exit' to quit.\n")
-
-#             if input_ == "exit":
-#                 break
-#             elif (input_ in "abcdefghijklmnopq" and len(input_) == 1) or input_ == "lobby":
-#                 coordinates = sgc.locations[input_]
-#                 lx = coordinates["lx"]
-#                 ly = coordinates["ly"]
-#                 if "az" in coordinates:
-#                     az = coordinates["az"]
-#                 else:
-#                     az = 0.0
-#                 # sgc.send_goal(input_, lx, ly, az)
-#                 sgc.teleport(input_, lx, ly, az)
-#             else:
-#                 print("You entry is invalid.  Please try again.\n")
-
-#     except rospy.ROSInterruptException as e:
-
-#         print(e)
-
-# if __name__ == "__main__":
-
-#     main()
