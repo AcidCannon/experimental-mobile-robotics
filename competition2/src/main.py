@@ -135,8 +135,8 @@ def bandits():
 
     def read_clue():
 
-        passcode = 41
-        num_arms = 2
+        passcode = 42
+        num_arms = 8
 
         # TODO read passcode and num_arms from the clue
         # passcode [1,99]
