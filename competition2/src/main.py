@@ -120,7 +120,7 @@ def bandits():
     def read_clue():
 
         passcode = 42
-        num_arms = 2
+        num_arms = 7
 
         # TODO read passcode and num_arms from the clue
         # passcode [1,99]
@@ -132,22 +132,15 @@ def bandits():
 
     # check input
     while input("\nThe clue reads: passcode {}, num_rooms {}.  Is this correct?\n".format(passcode, num_arms)) == "n":
-        if input("\nWould you like to attempt to use opencv to read the clue again\n?") == "y":
+        if input("\nWould you like to attempt to use opencv to read the clue again?\n") == "y":
             passcode, num_arms = read_clue()
         else:
-            passcode = int(input("\nManually enter the clue.  Please enter either the passcode.\n"))
-            num_rooms = int(input("\nManually enter the clue.  Please enter either the num_rooms.\n"))
+            passcode = int(input("\nManually enter the clue.  Please enter the passcode.\n"))
+            num_arms = int(input("\nManually enter the clue.  Please enter the num_arms.\n"))
 
-    try:
-
-        bandit_room = BanditRoom()
-        bandit_room.init_algorithm()
-        bandit_room.run_algorithm()
-        bandit_room.close_algorithm()
-
-    except rospy.ServiceException as e:
-
-        print(e)
+    bandit_room.init_algorithm(passcode, num_arms)
+    bandit_room.run_algorithm()
+    next_room, where = bandit_room.close_algorithm()
 
     #### end here ####
 
@@ -177,12 +170,6 @@ def maze():
 
     return next_room
 
-def test():
-
-    send_goal_client.traverse(0)
-    send_goal_client.traverse(13)
-    send_goal_client.traverse(2)
-
 
 if __name__ == "__main__":
 
@@ -193,17 +180,16 @@ if __name__ == "__main__":
     main_start = time.time()
 
     # initialize classes
+    bandit_room = BanditRoom()
     move = Move()
     send_goal_client = SendGoalClient()
 
     # localize
-    send_goal_client.localize()
-
-    # test() # TODO remove
+    # send_goal_client.localize()
 
     # lobby
     # send_goal_client.traverse(0)
-    next_room = lobby()
+    # next_room = lobby()
 
     # # shape room
     # send_goal_client.traverse(next_room)

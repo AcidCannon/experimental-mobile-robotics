@@ -43,7 +43,10 @@ class BanditRoom:
 
     def run_algorithm(self):
 
-        delta_qs = np.zeros(20)
+        print("\nlearning starting")
+
+        array_len = 6 * self.num_arms
+        delta_qs = np.ones(array_len)
 
         def policy():
             """
@@ -63,7 +66,7 @@ class BanditRoom:
             return a
 
         # problem complexity increases with the num_arms
-        while np.max(delta_qs) > 0.02:
+        while np.max(delta_qs) > 0.001:
 
             action = policy()
 
@@ -75,7 +78,7 @@ class BanditRoom:
             self.n[action] += 1
 
             delta_q = (1. / self.n[action]) * (reward - self.q[action])
-            delta_qs[self.t % 20] = delta_q
+            delta_qs[self.t % (array_len)] = delta_q
 
             self.q[action] += delta_q
 
@@ -100,7 +103,7 @@ class BanditRoom:
 
         print("\nresponse from server:")
         print("room {}".format(room))
-        print("where {}".format(where))
+        print("where {}\n".format(where))
 
         print("\norder of actions (from best action to worst action):")
         q_copy = np.copy(self.q).tolist()
@@ -111,6 +114,9 @@ class BanditRoom:
             q_copy[max_index] = -1
             print("action {}".format(max_index+1))
             a += 1
+        print("\n")
+
+        return room, where
 
 
 # def main():
