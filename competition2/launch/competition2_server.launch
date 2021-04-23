@@ -5,9 +5,9 @@
 	<arg name="shapes_count" default="6"/>
 	<arg name="shapes_type" default="red cube"/>
 	<arg name="shapes_room" default="19"/>
-	<arg name="bandit_probs" default="0.8, 0.5, 0.3, 0.8, 0.88, 0.89, 0.9"/>
+	<arg name="bandit_probs" default="0.8, 0.5, 0.3, 0.8, 0.88, 0.89, 0.9, 0.92"/>
 	<arg name="bandit_passcode" default="42"/>
-	<arg name="bandit_num_arms" default="7"/>
+	<arg name="bandit_num_arms" default="8"/>
     <arg name="bandit_room" default="6"/>
     <arg name="maze_passcode" default="37"/>
     <arg name="maze_room" default="3"/>

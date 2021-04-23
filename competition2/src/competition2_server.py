@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import rospy
-from std_srvs.srv import Empty, EmptyResponse 
+from std_srvs.srv import Empty, EmptyResponse
 from competition2.srv import BanditStep, BanditStepResponse, BanditAnswer, BanditAnswerResponse
 from competition2.srv import ShapesAnswer, ShapesAnswerResponse
 from competition2.srv import MazeAnswer, MazeAnswerResponse
@@ -67,7 +67,7 @@ def maze_answer_callback(request):
 		response.who = ""
 	return response
 
-rospy.init_node('competition2_server') 
+rospy.init_node('competition2_server')
 
 shapes_answer_srv = rospy.Service('/shapes_answer', ShapesAnswer, shapes_answer_callback)
 

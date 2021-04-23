@@ -8,6 +8,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import numpy as np
 from tf.transformations import quaternion_from_euler
 import rosparam
+from pathlib import Path
 
 class SendGoalClient:
 
@@ -15,8 +16,8 @@ class SendGoalClient:
 
         self.client = actionlib.SimpleActionClient("/move_base", MoveBaseAction)
         self.client.wait_for_server()
-        self.locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/locations.yaml")[0][0]
-        self.numbered_locations = rosparam.load_file("/home/user/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
+        self.locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/locations.yaml")[0][0]
+        self.numbered_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
 
         self.cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
         self.twist = Twist()
@@ -81,7 +82,7 @@ class SendGoalClient:
         left: +w
         right: -w
         """
-        
+
         v = 0
 
         if direction == "left":
@@ -101,7 +102,7 @@ class SendGoalClient:
         location: int
             location number
         """
-        
+
         if location == 0:
             print("\nmoving to lobby")
         else:
@@ -169,7 +170,7 @@ class SendGoalClient:
         pose = Pose()
         pose.position.x = lx
         pose.position.y = ly
-        
+
         orientation = quaternion_from_euler(0, 0, az)
         pose.orientation.x = orientation[0]
         pose.orientation.y = orientation[1]
