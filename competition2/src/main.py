@@ -33,7 +33,10 @@ def lobby():
         if input("\n\nWould you like to attempt to use opencv to read the clue again\n?") == "y":
             next_room = read_clue()
         else:
-            next_room = input("\n\nManually enter the clue.  Please enter either 'highest' or 'lowest'.\n")
+            print("\n\nManually obtaining the clue from the parameter server.")
+            next_room = rosparam.get_param("/competition2_server/shapes_room")
+            print("Shapes room is room {}.".format(next_room))
+            
 
     # TODO read map on the wall and associate numbers with letters
     # assumption: saved as dictionary (see numbered_locations.yaml for format)
@@ -192,7 +195,7 @@ def maze():
 def test_traverse():
 
     send_goal_client.localize()
-    send_goal_client.traverse(0)
+    # send_goal_client.traverse(0)
     send_goal_client.teleport(1)
     send_goal_client.localize()
     send_goal_client.traverse(0)

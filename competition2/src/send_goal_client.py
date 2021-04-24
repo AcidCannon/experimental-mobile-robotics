@@ -45,10 +45,12 @@ class SendGoalClient:
         print("\nplease wait...attempting to localize")
 
         iteration = 0
+        print(self.covariance)
         while (self.covariance["x"] + self.covariance["y"]) > 0.02 and iteration < 8:
+            print(self.covariance)
             print("covaraince:", (self.covariance["x"] + self.covariance["y"]))
             self.rotate("right", 90, z=2.0)
-            iteration += 1
+            iteration += 4
 
         self.publish()
 
