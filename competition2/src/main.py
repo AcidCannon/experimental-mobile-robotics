@@ -17,7 +17,7 @@ from move import Move
 from send_goal_client import SendGoalClient
 from bandit_room import BanditRoom
 from ucb_bandit_room import UCBBanditRoom
-
+from competition2.srv import ShapesAnswer, ShapesAnswerResponse
 
 def lobby():
     """
@@ -118,19 +118,26 @@ def shapes():
     # stitchImage.stitch()
     print("=== Report === Read from png")
     readClue = clue.ReadClue()
-    next_room = readClue.shapes() # replace this line
+    next_room = readClue.shapes()
     
     #### add here ####
     shapesRoom = shapes_room.ShapesRoom()
-    shapesRoom.identify_shape(next_room[0], next_room[1])
-    #### spin ####
-    shapesRoom.getResult()
+    ANGLE = 360 / constants.SHAPES_ROOM_SPIN_COUNT
+    m = Move()
+    for i in range(constants.SHAPES_ROOM_SPIN_COUNT):
+        m.stop()
+        shapesRoom.identify_shape(next_room[0], next_room[1])
+        rospy.sleep(0.5)
+        m.rotate("right", ANGLE)
+    m.stop()
     #### do somethin with next_room ####
     count = shapesRoom.getResult()
-    next_room = 19
-    what = "frying pan"  # TODO remove
-
-
+    print("=== Report === Shape count = " + str(count))
+    getAnswer = rospy.ServiceProxy('/shapes_answer', ShapesAnswer)
+    response = getAnswer(count)
+    next_room = response.room
+    what = response.how
+    print("=== Answer got === next_room = " + str(next_room) + " weapon = " + str(what))
     #### end here ####
 
     end = time.time()
@@ -258,14 +265,14 @@ if __name__ == "__main__":
     send_goal_client.localize()
 
     # lobby
-    # send_goal_client.traverse(0)
-    # while input("\n\nWould you like to start the lobby task?\n") == "y":
-    #     next_room = lobby()
+    send_goal_client.traverse(0)
+    while input("\n\nWould you like to start the lobby task?\n") == "y":
+        next_room = lobby()
 
     # shape room
-    # send_goal_client.traverse(next_room)
-    # while input("\n\nWould you like to start the shapes task?\n") == "y":
-    #     next_room, what = shapes()
+    send_goal_client.traverse(next_room)
+    while input("\n\nWould you like to start the shapes task?\n") == "y":
+        next_room, what = shapes()
 
     # bandit room
     # send_goal_client.traverse(next_room)
