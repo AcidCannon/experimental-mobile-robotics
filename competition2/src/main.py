@@ -247,43 +247,55 @@ if __name__ == "__main__":
     where = "Unknown"
     what = "Unknown"
 
-    # localize
+    # traverse to lobby
+    lobby_start = time.time()
     send_goal_client.localize()
+    # send_goal_client.traverse(0)
 
     # lobby
-    # send_goal_client.traverse(0)
     while input("\n\nWould you like to start the lobby task?\n") == "y":
         next_room = lobby()
 
-    # shape room
+    # traverse to shape room
     # send_goal_client.traverse(next_room)
-    lobby_end = time.time() - main_start
-    lobby_time = str(datetime.timedelta(seconds=lobby_end)).split(".")[0]
+    lobby_end = time.time()
+    lobby_time = str(datetime.timedelta(seconds=lobby_end - lobby_start)).split(".")[0]
     print("\nfinish lobby time: {} seconds".format(lobby_time))
+
+    # shape room
+    shape_start = time.time()
     while input("\n\nWould you like to start the shapes task?\n") == "y":
         next_room, what = shapes()
 
-    # bandit room
+    # traverse to bandit room
     # send_goal_client.traverse(next_room)
-    shape_end = time.time() - lobby_end
-    shape_time = str(datetime.timedelta(seconds=shape_end)).split(".")[0]
+    shape_end = time.time()
+    shape_time = str(datetime.timedelta(seconds=shape_end - shape_start)).split(".")[0]
     print("\nfinish shape time: {} seconds".format(shape_time))
+
+    # bandit room
+    bandit_start = time.time()
     while input("\n\nWould you like to start the bandits task?\n") == "y":
         next_room, where = bandits()
 
-    # maze room
+    # traverse to maze
     # send_goal_client.traverse(next_room)
-    bandit_end = time.time() - shape_end
-    bandit_time = str(datetime.timedelta(seconds=bandit_end)).split(".")[0]
-    print("\nfinish shape time: {} seconds".format(bandit_time))
+    bandit_end = time.time()
+    bandit_time = str(datetime.timedelta(seconds=bandit_end - bandit_start)).split(".")[0]
+    print("\nfinish bandit time: {} seconds".format(bandit_time))
+
+    # maze room
+    maze_start = time.time()
     while input("\n\nWould you like to start the maze room?\n") == "y":
         next_room, who = maze()
 
-    # solution reading room
+    # traverse to solution room
     # send_goal_client.traverse(next_room)
-    solution_end = time.time() - bandit_end
-    solution_time = str(datetime.timedelta(seconds=solution_end)).split(".")[0]
-    print("\nfinish solution room time: {} seconds".format(solution_time))
+    maze_end = time.time()
+    maze_time = str(datetime.timedelta(seconds=maze_end - maze_start)).split(".")[0]
+
+    # solution room
+    print("\nfinish solution room time: {} seconds".format(maze_time))
 
     print("\n\nfinal solution:")
     print("who:", who)
