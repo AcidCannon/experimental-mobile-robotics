@@ -1,8 +1,15 @@
+#! /usr/bin/python
 import time
 import rospy
 import datetime
 import rosparam
+import read_room_number
+import shapes_room
 import yaml
+import stitch_image
+import read_clue as clue
+import os
+import constants
 
 from pathlib import Path
 
@@ -22,10 +29,15 @@ def lobby():
     start = time.time()
 
     #### add here ####
-
     # TODO read clue on the wall and save as next_room
     def read_clue():
-        next_room = "highest" # replace this line
+        # stitchImage = stitch_image.StitchImage()
+        # stitchImage.DEBUG = True
+        # stitchImage.preStitch()
+        # stitchImage.stitch()
+        print("=== Report === Read from png")
+        readClue = clue.ReadClue()
+        next_room = readClue.lobby() # replace this line
         return next_room
 
     next_room = read_clue()
@@ -38,7 +50,7 @@ def lobby():
             print("Shapes room is room {}.".format(next_room))
             
 
-    # TODO read map on the wall and associate numbers with letters
+    # read map on the wall and associate numbers with letters
     # assumption: saved as dictionary (see numbered_locations.yaml for format)
     # assumption: lobby is assinged a value of 0
     def read_map():
@@ -47,16 +59,8 @@ def lobby():
 
         @return numbered_locations: dict {int: string}
         """
-
-        # add here
-
-
-        # end here
-
         numbered_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
-
         return numbered_locations
-
 
     numbered_locations = read_map()
     print("\n\nroom assignments:")
@@ -110,10 +114,23 @@ def shapes():
     """
 
     start = time.time()
-
+    
+    # stitchImage = stitch_image.StitchImage()
+    # stitchImage.DEBUG = True
+    # stitchImage.preStitch()
+    # stitchImage.stitch()
+    print("=== Report === Read from png")
+    readClue = clue.ReadClue()
+    next_room = readClue.shapes() # replace this line
+    
     #### add here ####
-
-    next_room = 0  # TODO remove
+    shapesRoom = shapes_room.ShapesRoom()
+    shapesRoom.identify_shape(next_room[0], next_room[1])
+    #### spin ####
+    shapesRoom.getResult()
+    #### do somethin with next_room ####
+    count = shapesRoom.getResult()
+    next_room = 19
     what = "frying pan"  # TODO remove
 
 
@@ -144,7 +161,16 @@ def bandits():
         # TODO read passcode and num_arms from the clue
         # passcode [1,99]
         # num_arms [2,8]
-
+        # stitchImage = stitch_image.StitchImage()
+        # stitchImage.DEBUG = True
+        # stitchImage.preStitch()
+        # stitchImage.stitch()
+        print("=== Report === Read from png")
+        readClue = clue.ReadClue()
+        next_room = readClue.bandit() # replace this line    
+        if len(next_room) == 2:
+            passcode = next_room[0]
+            num_arms = next_room[1]
         return passcode, num_arms
 
     passcode, num_arms = read_clue()
@@ -193,12 +219,24 @@ def maze():
     return next_room, who
 
 if __name__ == "__main__":
-
+    print("=== Detect Tesseract ===")
+    os.system("./install.sh")
+    print("=== Preparing ===")
+    print("=== Removing previous room number correspondence ===")
+    os.system("rm " + constants.NUMBERED_LOCATIONS)
+    print("=== Removing previous stitched images ===")
+    os.system("rm -rf " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
+    os.system("mkdir -p " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
+    print("=== Prepare complete ===")
     rospy.init_node("main_node")
 
     # start program
     print("\nstarting program\n")
     main_start = time.time()
+
+    readRoomNumber = read_room_number.ReadRoomNumber()
+    readRoomNumber.readRoomNumber(readRoomNumber.readPath)
+    readRoomNumber.writeYaml()
 
     # initialize classes
     bandit_room = UCBBanditRoom()
