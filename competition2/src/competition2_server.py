@@ -1,12 +1,13 @@
 #! /usr/bin/env python
 
 import rospy
-from std_srvs.srv import Empty, EmptyResponse
+from std_srvs.srv import Empty, EmptyResponse 
 from competition2.srv import BanditStep, BanditStepResponse, BanditAnswer, BanditAnswerResponse
 from competition2.srv import ShapesAnswer, ShapesAnswerResponse
 from competition2.srv import MazeAnswer, MazeAnswerResponse
 import numpy as np
 
+np.random.seed(0) 
 shapes_count = rospy.get_param('/competition2_server/shapes_count', 6)
 shapes_type = rospy.get_param('/competition2_server/shapes_type', "red cube")
 shapes_room = rospy.get_param('/competition2_server/shapes_room', 19)
@@ -28,7 +29,7 @@ def shapes_answer_callback(request):
 	response = ShapesAnswerResponse()
 	response.room = bandit_room
 	if count == shapes_count:
-		response.how = "Revolver"
+		response.how = "double-bladed lightsaber"
 	else:
 		response.how = ""
 	return response
@@ -53,7 +54,7 @@ def bandit_answer_callback(request):
 	response = BanditAnswerResponse()
 	response.room = maze_room
 	if arm == bandit_max_idx:
-		response.where = "Lounge"
+		response.where = "CAB"
 	else:
 		response.where = ""
 	return response
@@ -62,12 +63,12 @@ def maze_answer_callback(request):
 	response = MazeAnswerResponse()
 	response.room = final_room
 	if request.passcode == maze_passcode:
-		response.who = "Dr. Taylor"
+		response.who = "Herr Professor Doktor Taylor"
 	else:
 		response.who = ""
 	return response
 
-rospy.init_node('competition2_server')
+rospy.init_node('competition2_server') 
 
 shapes_answer_srv = rospy.Service('/shapes_answer', ShapesAnswer, shapes_answer_callback)
 
