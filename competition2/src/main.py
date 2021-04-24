@@ -223,25 +223,11 @@ def maze():
     return next_room, who
 
 if __name__ == "__main__":
-    print("=== Detect Tesseract ===")
-    os.system("./install.sh")
-    print("=== Preparing ===")
-    print("=== Removing previous room number correspondence ===")
-    os.system("rm " + constants.NUMBERED_LOCATIONS)
-    print("=== Removing previous stitched images ===")
-    os.system("rm -rf " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
-    os.system("mkdir -p " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
-    print("=== Prepare complete ===")
-    rospy.init_node("main_node")
 
     # start program
     print("\nstarting program\n")
     main_start = time.time()
-    print("\nstart time: {}".format(main_start))
-
-    readRoomNumber = read_room_number.ReadRoomNumber()
-    readRoomNumber.readRoomNumber(readRoomNumber.readPath)
-    readRoomNumber.writeYaml()
+    print("\nstart time: {}\n".format("0:00:00 h:mm:ss"))
 
     # initialize classes
     bandit_room = UCBBanditRoom()
@@ -258,36 +244,61 @@ if __name__ == "__main__":
     send_goal_client.localize()
     send_goal_client.traverse(0)
 
+    print("\n=== Detect Tesseract ===")
+    os.system("./install.sh")
+    print("=== Preparing ===")
+    print("=== Removing previous room number correspondence ===")
+    os.system("rm " + constants.NUMBERED_LOCATIONS)
+    print("=== Removing previous stitched images ===")
+    os.system("rm -rf " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
+    os.system("mkdir -p " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
+    print("=== Prepare complete ===\n")
+    rospy.init_node("main_node")
+
+    readRoomNumber = read_room_number.ReadRoomNumber()
+    readRoomNumber.readRoomNumber(readRoomNumber.readPath)
+    readRoomNumber.writeYaml()
+
     # lobby
     while input("\n\nWould you like to start the lobby task?\n") == "y":
         next_room = lobby()
 
-    # traverse to shape room
-    send_goal_client.traverse(next_room)
+    # traverse to shape room doorway
+    send_goal_client.traverse(next_room, doorway=True)
+
+    # print lobby time
     lobby_end = time.time()
     lobby_time = str(datetime.timedelta(seconds=lobby_end - lobby_start)).split(".")[0]
     print("\nfinish lobby time: {} seconds".format(lobby_time))
+
+    # traverse to shape room center
+    send_goal_client.traverse(next_room)
 
     # shape room
     shape_start = time.time()
     while input("\n\nWould you like to start the shapes task?\n") == "y":
         next_room, what = shapes()
 
-    # traverse to bandit room
-    send_goal_client.traverse(next_room)
+    # traverse to bandit room doorway
+    send_goal_client.traverse(next_room, doorway=True)
+
+    # print shape room time
     shape_end = time.time()
     shape_time = str(datetime.timedelta(seconds=shape_end - shape_start)).split(".")[0]
     print("\nfinish shape time: {} seconds".format(shape_time))
-    send_goal_client.traverse(0)
+    
+    # traverse to bandit room center
+    send_goal_client.traverse(next_room)
 
     # bandit room
     bandit_start = time.time()
     while input("\n\nWould you like to start the bandit task?\n") == "y":
         next_room = bandits()
 
+    # traverse to maze room doorway
+    send_goal_client.traverse(next_room, doorway=True)
 
-    # traverse to maze room
-    send_goal_client.traverse(next_room)
+    # print bandit room time
     bandit_end = time.time()
     bandit_time = str(datetime.timedelta(seconds=bandit_end - bandit_start)).split(".")[0]
     print("\nfinish bandit time: {} seconds".format(bandit_time))
@@ -297,14 +308,18 @@ if __name__ == "__main__":
     while input("\n\nWould you like to start the maze room?\n") == "y":
         next_room, who = maze()
 
-    # traverse to solution room
-    send_goal_client.traverse(next_room)
+    # traverse to final room doorway
+    send_goal_client.traverse(next_room, doorway=True)
+
+    # print maze room time
     maze_end = time.time()
     maze_time = str(datetime.timedelta(seconds=maze_end - maze_start)).split(".")[0]
+    print("\nmaze room time: {} seconds".format(maze_time))
 
-    # solution room
-    print("\nfinish solution room time: {} seconds".format(maze_time))
+    # traverse to final room center
+    send_goal_client.traverse(next_room)
 
+    # final room
     print("\n\nfinal solution:")
     print("who:", who)
     print("what:", what)
