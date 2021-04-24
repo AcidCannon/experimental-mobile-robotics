@@ -16,6 +16,7 @@ from pathlib import Path
 from move import Move
 from send_goal_client import SendGoalClient
 from bandit_room import BanditRoom
+import mazecrawler
 from ucb_bandit_room import UCBBanditRoom
 from read_room_number import ReadRoomNumber
 
@@ -209,6 +210,7 @@ def maze():
     # start = time.time()
 
     #### add here ####
+    mazecrawler.main()
 
     next_room = 0 # TODO remove
     who = "Unknown" # TODO remove
