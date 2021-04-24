@@ -9,6 +9,7 @@ import numpy as np
 from tf.transformations import quaternion_from_euler
 import rosparam
 from pathlib import Path
+from move import Move
 
 class SendGoalClient:
 
@@ -31,6 +32,8 @@ class SendGoalClient:
 
         self.initial_pose = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=10)
 
+        self.move = Move()
+
     def amcl_pose_callback(self, data):
 
         self.covariance["x"] = data.pose.covariance[0]
@@ -45,12 +48,16 @@ class SendGoalClient:
         print("\nplease wait...attempting to localize")
 
         iteration = 0
-        print(self.covariance)
-        while (self.covariance["x"] + self.covariance["y"]) > 0.02 and iteration < 8:
-            print(self.covariance)
+        while (self.covariance["x"] + self.covariance["y"]) > 0.005:
             print("covaraince:", (self.covariance["x"] + self.covariance["y"]))
-            self.rotate("right", 90, z=2.0)
-            iteration += 4
+            self.rotate("right", 180, z=2.0)
+            iteration += 1
+
+            if iteration > 4:
+                random = np.random.choice(["forward", "backward", "right", "left"])
+                self.move.move(random, distance=1.0)
+                iteration = 0
+
 
         self.publish()
 
@@ -168,6 +175,10 @@ class SendGoalClient:
         pose.pose.pose.orientation.y = orientation[1]
         pose.pose.pose.orientation.z = orientation[2]
         pose.pose.pose.orientation.w = orientation[3]
+
+        pose.pose.covariance[0] = 4.0
+        pose.pose.covariance[7] = 4.0
+        pose.pose.covariance[-1] = 4.0
 
         self.initial_pose.publish(pose)
 

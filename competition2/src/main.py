@@ -193,10 +193,13 @@ def maze():
     return next_room, who
 
 def test_traverse():
+    print("here")
 
     send_goal_client.localize()
     # send_goal_client.traverse(0)
     send_goal_client.teleport(1)
+    time.sleep(5)
+    print(send_goal_client.covariance)
     send_goal_client.localize()
     send_goal_client.traverse(0)
     send_goal_client.teleport(2)
@@ -218,7 +221,7 @@ if __name__ == "__main__":
     send_goal_client = SendGoalClient()
 
     # TODO remove if running
-    test_traverse()
+    # test_traverse()
 
     # clue
     who = "Joe"
@@ -226,7 +229,7 @@ if __name__ == "__main__":
     what = "frying pan"
 
     # localize
-    # send_goal_client.localize()
+    send_goal_client.localize()
 
     # lobby
     # send_goal_client.traverse(0)
