@@ -16,9 +16,9 @@ from pathlib import Path
 from move import Move
 from send_goal_client import SendGoalClient
 from bandit_room import BanditRoom
-import mazecrawler
 from ucb_bandit_room import UCBBanditRoom
 from read_room_number import ReadRoomNumber
+import mazecrawler
 
 from competition2.srv import ShapesAnswer, ShapesAnswerResponse
 
