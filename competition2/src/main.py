@@ -57,8 +57,6 @@ def lobby():
         @return numbered_locations: dict {int: string}
         """
 
-
-
         numbered_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
         return numbered_locations
 
@@ -250,14 +248,16 @@ if __name__ == "__main__":
     # traverse to lobby
     lobby_start = time.time()
     send_goal_client.localize()
-    # send_goal_client.traverse(0)
+    send_goal_client.traverse(0)
 
     # lobby
     while input("\n\nWould you like to start the lobby task?\n") == "y":
         next_room = lobby()
 
     # traverse to shape room
-    # send_goal_client.traverse(next_room)
+    # TODO remove
+    # next_room = rosparam.get_param("/competition2_server/shapes_room")
+    send_goal_client.traverse(next_room)
     lobby_end = time.time()
     lobby_time = str(datetime.timedelta(seconds=lobby_end - lobby_start)).split(".")[0]
     print("\nfinish lobby time: {} seconds".format(lobby_time))
@@ -268,7 +268,9 @@ if __name__ == "__main__":
         next_room, what = shapes()
 
     # traverse to bandit room
-    # send_goal_client.traverse(next_room)
+    # TODO remove
+    # next_room = rosparam.get_param("/competition2_server/bandit_room")
+    send_goal_client.traverse(next_room)
     shape_end = time.time()
     shape_time = str(datetime.timedelta(seconds=shape_end - shape_start)).split(".")[0]
     print("\nfinish shape time: {} seconds".format(shape_time))
@@ -279,7 +281,9 @@ if __name__ == "__main__":
         next_room, where = bandits()
 
     # traverse to maze
-    # send_goal_client.traverse(next_room)
+    # TODO remove
+    # next_room = rosparam.get_param("/competition2_server/maze_room")
+    send_goal_client.traverse(next_room)
     bandit_end = time.time()
     bandit_time = str(datetime.timedelta(seconds=bandit_end - bandit_start)).split(".")[0]
     print("\nfinish bandit time: {} seconds".format(bandit_time))
@@ -290,7 +294,9 @@ if __name__ == "__main__":
         next_room, who = maze()
 
     # traverse to solution room
-    # send_goal_client.traverse(next_room)
+    # TODO remove
+    # next_room = rosparam.get_param("/competition2_server/final_room")
+    send_goal_client.traverse(next_room)
     maze_end = time.time()
     maze_time = str(datetime.timedelta(seconds=maze_end - maze_start)).split(".")[0]
 
