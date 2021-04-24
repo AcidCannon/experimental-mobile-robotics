@@ -187,7 +187,7 @@ class SendGoalClient:
 
         self.initial_pose.publish(pose)
 
-    def teleport(self, location):
+    def teleport(self, location, doorway=False):
         """
         Teleport robot's position.
 
@@ -201,12 +201,30 @@ class SendGoalClient:
             print("\teleporting to room {}".format(location))
         location = self.numbered_locations[location]
 
-        # get location data
-        lx = self.locations[location]["lx"]
-        ly = self.locations[location]["ly"]
-        az = 0.0
-        if "az" in self.locations[location]:
-            az = self.locations[location]["az"]
+        if doorway:
+
+             # get location data
+            lx = self.doorway_locations[location]["lx"]
+            ly = self.doorway_locations[location]["ly"]
+            az = 0.0
+            if "az" in self.doorway_locations[location]:
+                az = self.doorway_locations[location]["az"]
+        
+        else:
+
+            # get location data
+            lx = self.locations[location]["lx"]
+            ly = self.locations[location]["ly"]
+            az = 0.0
+            if "az" in self.locations[location]:
+                az = self.locations[location]["az"]
+
+        # # get location data
+        # lx = self.locations[location]["lx"]
+        # ly = self.locations[location]["ly"]
+        # az = 0.0
+        # if "az" in self.locations[location]:
+        #     az = self.locations[location]["az"]
 
         # send location data to service
         rospy.wait_for_service("/gazebo/set_model_state")

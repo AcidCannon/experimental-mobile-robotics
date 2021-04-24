@@ -117,12 +117,12 @@ def shapes():
     # stitchImage.DEBUG = True
     # stitchImage.preStitch()
     # stitchImage.stitch()
-    # print("\n=== Report === Read from png")
-    # readClue = clue.ReadClue()
-    # next_room = readClue.shapes()
+    print("\n=== Report === Read from png")
+    readClue = clue.ReadClue()
+    next_room = readClue.shapes()
 
-    next_room = rosparam.get_param("/competition2_server/shapes_type")
-    next_room = next_room.split()
+    # next_room = rosparam.get_param("/competition2_server/shapes_type")
+    # next_room = next_room.split()
     
     #### add here ####
     shapesRoom = shapes_room.ShapesRoom()

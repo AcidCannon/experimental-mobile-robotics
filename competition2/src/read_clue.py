@@ -13,7 +13,7 @@ class ReadClue:
 
     def lobby(self):
         path = constants.CLUE_IMAGE_PATH_PREFIX + "lobby/" + "one.png"
-        result = self.generalPurposeOCR.getResultFromPath(path)
+        result = self.generalPurposeOCR.getResultFromPath(path).lower()
         print("=== Clue ===")
         print(result)
         if "high" or "highest" in result:
@@ -23,7 +23,7 @@ class ReadClue:
     
     def shapes(self):
         path = "/home/user/catkin_ws/src/competition2/models/shapes/one.png"
-        result = self.generalPurposeOCR.getResultFromPath(path)
+        result = self.generalPurposeOCR.getResultFromPath(path).lower()
         print("=== Clue ===")
         print(result)
         color = "yellow"
@@ -43,7 +43,7 @@ class ReadClue:
     
     def bandit(self):
         path = constants.CLUE_IMAGE_PATH_PREFIX + "bandit/" + "one.png"
-        result = self.generalPurposeOCR.getResultFromPath(path)
+        result = self.generalPurposeOCR.getResultFromPath(path).lower()
         print("=== Clue ===")
         print(result)
         
@@ -55,7 +55,7 @@ class ReadClue:
 
     def maze(self):
         path = constants.CLUE_IMAGE_PATH_PREFIX + "maze/" + "one.png"
-        result = self.generalPurposeOCR.getResultFromPath(path)
+        result = self.generalPurposeOCR.getResultFromPath(path).lower()
         print("=== Clue ===")
         print(result)
         
