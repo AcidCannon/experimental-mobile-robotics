@@ -52,9 +52,11 @@ class StitchImage:
       if self.DEBUG:
         cv2.imshow("StitchedImage", stitched)
         cv2.waitKey(0)
+      return True, stitched
     else:
-        statusMeaning = ['OK', 'ERR_NEED_MORE_IMGS', 'ERR_HOMOGRAPHY_EST_FAIL', 'ERR_CAMERA_PARAMS_ADJUST_FAIL']
-        print("=== Report === Faild to stitch images, status code = " + str(status) + " " + statusMeaning[status])
+      statusMeaning = ['OK', 'ERR_NEED_MORE_IMGS', 'ERR_HOMOGRAPHY_EST_FAIL', 'ERR_CAMERA_PARAMS_ADJUST_FAIL']
+      print("=== Report === Faild to stitch images, status code = " + str(status) + " " + statusMeaning[status])
+      return False, None
 
 if __name__ == "__main__":
   rospy.init_node("shapes_room")

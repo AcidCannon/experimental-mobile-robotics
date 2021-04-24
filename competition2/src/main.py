@@ -19,6 +19,7 @@ from bandit_room import BanditRoom
 from ucb_bandit_room import UCBBanditRoom
 from read_room_number import ReadRoomNumber
 
+from competition2.srv import ShapesAnswer, ShapesAnswerResponse
 
 def lobby():
     """
@@ -117,19 +118,26 @@ def shapes():
     # stitchImage.stitch()
     print("=== Report === Read from png")
     readClue = clue.ReadClue()
-    next_room = readClue.shapes() # replace this line
+    next_room = readClue.shapes()
     
     #### add here ####
     shapesRoom = shapes_room.ShapesRoom()
-    shapesRoom.identify_shape(next_room[0], next_room[1])
-    #### spin ####
-    shapesRoom.getResult()
+    ANGLE = 360 / constants.SHAPES_ROOM_SPIN_COUNT
+    m = Move()
+    for i in range(constants.SHAPES_ROOM_SPIN_COUNT):
+        m.stop()
+        shapesRoom.identify_shape(next_room[0], next_room[1])
+        rospy.sleep(0.5)
+        m.rotate("right", ANGLE)
+    m.stop()
     #### do somethin with next_room ####
     count = shapesRoom.getResult()
-    next_room = 19
-    what = "frying pan"  # TODO remove
-
-
+    print("=== Report === Shape count = " + str(count))
+    getAnswer = rospy.ServiceProxy('/shapes_answer', ShapesAnswer)
+    response = getAnswer(count)
+    next_room = response.room
+    what = response.how
+    print("=== Answer got === next_room = " + str(next_room) + " weapon = " + str(what))
     #### end here ####
 
     # end = time.time()
@@ -255,8 +263,6 @@ if __name__ == "__main__":
         next_room = lobby()
 
     # traverse to shape room
-    # TODO remove
-    # next_room = rosparam.get_param("/competition2_server/shapes_room")
     send_goal_client.traverse(next_room)
     lobby_end = time.time()
     lobby_time = str(datetime.timedelta(seconds=lobby_end - lobby_start)).split(".")[0]
@@ -268,21 +274,19 @@ if __name__ == "__main__":
         next_room, what = shapes()
 
     # traverse to bandit room
-    # TODO remove
-    # next_room = rosparam.get_param("/competition2_server/bandit_room")
     send_goal_client.traverse(next_room)
     shape_end = time.time()
     shape_time = str(datetime.timedelta(seconds=shape_end - shape_start)).split(".")[0]
     print("\nfinish shape time: {} seconds".format(shape_time))
+    send_goal_client.traverse(0)
 
     # bandit room
     bandit_start = time.time()
-    while input("\n\nWould you like to start the bandits task?\n") == "y":
-        next_room, where = bandits()
+    while input("\n\nWould you like to start the bandit task?\n") == "y":
+        next_room = bandits()
 
-    # traverse to maze
-    # TODO remove
-    # next_room = rosparam.get_param("/competition2_server/maze_room")
+
+    # traverse to maze room
     send_goal_client.traverse(next_room)
     bandit_end = time.time()
     bandit_time = str(datetime.timedelta(seconds=bandit_end - bandit_start)).split(".")[0]
@@ -294,8 +298,6 @@ if __name__ == "__main__":
         next_room, who = maze()
 
     # traverse to solution room
-    # TODO remove
-    # next_room = rosparam.get_param("/competition2_server/final_room")
     send_goal_client.traverse(next_room)
     maze_end = time.time()
     maze_time = str(datetime.timedelta(seconds=maze_end - maze_start)).split(".")[0]

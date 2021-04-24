@@ -11,8 +11,8 @@ TrajectoryPlannerROS:
   acc_lim_x: 2.5
   acc_lim_theta:  3.2
 
-  max_vel_x: 1.0
-  min_vel_x: 0.0
+  max_vel_x: 2.0
+  min_vel_x: 1.5
 
   max_vel_theta: 1.0
   min_vel_theta: -1.0
@@ -59,12 +59,17 @@ DWAPlannerROS:
   acc_lim_th: 3.2
 
   max_vel_x: 1.0 # 0.5
-  min_vel_x: 0.0 # 0.0
+  min_vel_x: 0.1 # 0.0 # TODO
   max_vel_y: 0 # differential drive
   min_vel_y: 0 # differential drive
 
-  max_trans_vel: 0.5
-  min_trans_vel: 0.1
+  max_vel_theta: 1.0
+  min_vel_theta: -1.0
+
+  min_in_place_vel_theta: 0.8
+
+  max_vel_trans: 1.0 # max_trans_vel
+  min_vel_trans: 0.1
   max_rot_vel: 1.0
   min_rot_vel: 0.2
 
