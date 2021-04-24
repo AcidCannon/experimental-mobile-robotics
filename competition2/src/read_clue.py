@@ -22,7 +22,7 @@ class ReadClue:
             return("lowest")
     
     def shapes(self):
-        path = constants.CLUE_IMAGE_PATH_PREFIX + "shapes/" + "one.png"
+        path = "/home/user/catkin_ws/src/competition2/models/shapes/one.png"
         result = self.generalPurposeOCR.getResultFromPath(path)
         print("=== Clue ===")
         print(result)

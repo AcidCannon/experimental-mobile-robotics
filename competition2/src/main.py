@@ -18,6 +18,7 @@ from send_goal_client import SendGoalClient
 from bandit_room import BanditRoom
 from ucb_bandit_room import UCBBanditRoom
 from read_room_number import ReadRoomNumber
+import mazecrawler
 
 from competition2.srv import ShapesAnswer, ShapesAnswerResponse
 
@@ -116,9 +117,12 @@ def shapes():
     # stitchImage.DEBUG = True
     # stitchImage.preStitch()
     # stitchImage.stitch()
-    print("\n=== Report === Read from png")
-    readClue = clue.ReadClue()
-    next_room = readClue.shapes()
+    # print("\n=== Report === Read from png")
+    # readClue = clue.ReadClue()
+    # next_room = readClue.shapes()
+
+    next_room = rosparam.get_param("/competition2_server/shapes_type")
+    next_room = next_room.split()
     
     #### add here ####
     shapesRoom = shapes_room.ShapesRoom()
@@ -209,9 +213,13 @@ def maze():
     # start = time.time()
 
     #### add here ####
+    mazecrawler.main()
 
     next_room = 0 # TODO remove
     who = "Unknown" # TODO remove
+
+    # TODO remove
+    next_room = rosparam.get_param("/competition2_server/final_room")
 
 
     #### end here ####
@@ -243,29 +251,30 @@ if __name__ == "__main__":
 
     # traverse to lobby
     lobby_start = time.time()
-    send_goal_client.localize()
-    send_goal_client.traverse(0)
+    # send_goal_client.localize()
+    # send_goal_client.teleport(0)
 
-    print("\n=== Detect Tesseract ===")
-    os.system("./install.sh")
-    print("=== Preparing ===")
-    print("=== Removing previous room number correspondence ===")
-    os.system("rm " + constants.NUMBERED_LOCATIONS)
-    print("=== Removing previous stitched images ===")
-    os.system("rm -rf " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
-    os.system("mkdir -p " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
-    print("=== Prepare complete ===\n")
+    # print("\n=== Detect Tesseract ===")
+    # os.system("./install.sh")
+    # print("=== Preparing ===")
+    # print("=== Removing previous room number correspondence ===")
+    # os.system("rm " + constants.NUMBERED_LOCATIONS)
+    # print("=== Removing previous stitched images ===")
+    # os.system("rm -rf " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
+    # os.system("mkdir -p " + constants.STITCH_IMAGE_COMMON_PATH_PREFIX[:-1])
+    # print("=== Prepare complete ===\n")
 
-    readRoomNumber = read_room_number.ReadRoomNumber()
-    readRoomNumber.readRoomNumber(readRoomNumber.readPath)
-    readRoomNumber.writeYaml()
+    # readRoomNumber = read_room_number.ReadRoomNumber()
+    # readRoomNumber.readRoomNumber(readRoomNumber.readPath)
+    # readRoomNumber.writeYaml()
 
     # lobby
-    while input("\n\nWould you like to start the lobby task?\n") == "y":
-        next_room = lobby()
+    # while input("\n\nWould you like to start the lobby task?\n") == "y":
+    #     next_room = lobby()
+    next_room = 19
 
     # traverse to shape room doorway
-    send_goal_client.traverse(next_room, doorway=True)
+    # send_goal_client.traverse(next_room, doorway=True)
 
     # print lobby time
     lobby_end = time.time()
@@ -273,7 +282,7 @@ if __name__ == "__main__":
     print("\nfinish lobby time: {} seconds".format(lobby_time))
 
     # traverse to shape room center
-    send_goal_client.traverse(next_room)
+    send_goal_client.teleport(next_room)
 
     # shape room
     shape_start = time.time()
@@ -281,7 +290,7 @@ if __name__ == "__main__":
         next_room, what = shapes()
 
     # traverse to bandit room doorway
-    send_goal_client.traverse(next_room, doorway=True)
+    # send_goal_client.traverse(next_room, doorway=True)
 
     # print shape room time
     shape_end = time.time()
@@ -289,7 +298,7 @@ if __name__ == "__main__":
     print("\nfinish shape time: {} seconds".format(shape_time))
     
     # traverse to bandit room center
-    send_goal_client.traverse(next_room)
+    # send_goal_client.teleport(next_room)
 
     # bandit room
     bandit_start = time.time()
@@ -297,7 +306,7 @@ if __name__ == "__main__":
         next_room, where = bandits()
 
     # traverse to maze room doorway
-    send_goal_client.traverse(next_room, doorway=True)
+    send_goal_client.teleport(next_room, doorway=True)
 
     # print bandit room time
     bandit_end = time.time()
@@ -310,7 +319,7 @@ if __name__ == "__main__":
         next_room, who = maze()
 
     # traverse to final room doorway
-    send_goal_client.traverse(next_room, doorway=True)
+    # send_goal_client.traverse(next_room, doorway=True)
 
     # print maze room time
     maze_end = time.time()
@@ -318,7 +327,7 @@ if __name__ == "__main__":
     print("\nmaze room time: {} seconds".format(maze_time))
 
     # traverse to final room center
-    send_goal_client.traverse(next_room)
+    send_goal_client.teleport(next_room)
 
     # final room
     print("\n\nfinal solution:")
