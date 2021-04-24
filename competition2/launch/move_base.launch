@@ -1,7 +1,7 @@
 <launch>
 
     <!-- map server -->
-    <arg name="map_file" default="$(find competition2)/maps/map2.yaml" />
+    <arg name="map_file" default="$(find competition2)/maps/map3.yaml" />
     <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
     <!-- amcl -->

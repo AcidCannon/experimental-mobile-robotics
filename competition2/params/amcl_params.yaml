@@ -1,7 +1,7 @@
 # minimum allowed number of particles
-min_particles: 5000 # 500
+min_particles: 10000 # 500
 # maximum allowed number of particles
-max_particles: 10000 # 2000
+max_particles: 20000 # 2000
 # maximum error between the true distribution and the estimated distribution
 kld_err: 0.01
 # upper standard normal quantile for (1 - p), where p is the probability that the error on the estimated distrubition will be less than kld_err

@@ -9,6 +9,7 @@ import numpy as np
 from tf.transformations import quaternion_from_euler
 import rosparam
 from pathlib import Path
+from move import Move
 
 class SendGoalClient:
 
@@ -18,6 +19,7 @@ class SendGoalClient:
         self.client.wait_for_server()
         self.locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/locations.yaml")[0][0]
         self.numbered_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
+        self.doorway_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/doorway_locations.yaml")[0][0]
 
         self.cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
         self.twist = Twist()
@@ -30,6 +32,8 @@ class SendGoalClient:
             pass
 
         self.initial_pose = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=10)
+
+        self.move = Move()
 
     def amcl_pose_callback(self, data):
 
@@ -47,8 +51,9 @@ class SendGoalClient:
         iteration = 0
         while (self.covariance["x"] + self.covariance["y"]) > 0.02 and iteration < 8:
             print("covaraince:", (self.covariance["x"] + self.covariance["y"]))
-            self.rotate("right", 90, z=2.0)
+            self.rotate("right", 180, z=2.0)
             iteration += 1
+
 
         self.publish()
 
@@ -96,13 +101,15 @@ class SendGoalClient:
         t = np.radians(angle) / z
         rospy.sleep(t)
 
-    def traverse(self, location):
+    def traverse(self, location, doorway=False):
         """
         Send goal position to move_base action server.
         Traverse the resultant path.
 
         location: int
             location number
+        doorway: bool
+            if true, go to doorway instead of center of room
         """
 
         if location == 0:
@@ -110,6 +117,8 @@ class SendGoalClient:
         else:
             print("\nmoving to room {}".format(location))
         location = self.numbered_locations[location]
+        if doorway:
+            location = self.doorway_locations[location + "d"]
 
         # get location data
         lx = self.locations[location]["lx"]
@@ -139,7 +148,7 @@ class SendGoalClient:
 
         print("room reached.\n")
 
-    def teleport(self, location):
+    def teleport_old(self, location):
 
         if location == 0:
             print("\nteleporting to lobby")
@@ -153,11 +162,10 @@ class SendGoalClient:
         az = 0.0
         if "az" in self.locations[location]:
             az = self.locations[location]["az"]
-        
+
         pose = PoseWithCovarianceStamped()
 
-        pose.header.stamp = rospy.Time.now()
-        pose.header.frame_id = "/map"
+        pose.header.frame_id = "map"
 
         pose.pose.pose.position.x = lx
         pose.pose.pose.position.y = ly
@@ -170,7 +178,7 @@ class SendGoalClient:
 
         self.initial_pose.publish(pose)
 
-    def teleport_old(self, location):
+    def teleport(self, location):
         """
         Teleport robot's position.
 
