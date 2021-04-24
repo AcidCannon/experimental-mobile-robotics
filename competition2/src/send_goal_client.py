@@ -19,6 +19,7 @@ class SendGoalClient:
         self.client.wait_for_server()
         self.locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/locations.yaml")[0][0]
         self.numbered_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
+        self.doorway_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/doorway_locations.yaml")[0][0]
 
         self.cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
         self.twist = Twist()
@@ -100,13 +101,15 @@ class SendGoalClient:
         t = np.radians(angle) / z
         rospy.sleep(t)
 
-    def traverse(self, location):
+    def traverse(self, location, doorway=False):
         """
         Send goal position to move_base action server.
         Traverse the resultant path.
 
         location: int
             location number
+        doorway: bool
+            if true, go to doorway instead of center of room
         """
 
         if location == 0:
@@ -114,6 +117,8 @@ class SendGoalClient:
         else:
             print("\nmoving to room {}".format(location))
         location = self.numbered_locations[location]
+        if doorway:
+            location = self.doorway_locations[location + "d"]
 
         # get location data
         lx = self.locations[location]["lx"]
@@ -206,7 +211,7 @@ class SendGoalClient:
         pose = Pose()
         pose.position.x = lx
         pose.position.y = ly
-
+/gazebo/set_model_state
         orientation = quaternion_from_euler(0, 0, az)
         pose.orientation.x = orientation[0]
         pose.orientation.y = orientation[1]
