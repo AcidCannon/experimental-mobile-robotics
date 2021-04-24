@@ -33,7 +33,10 @@ def lobby():
         if input("\n\nWould you like to attempt to use opencv to read the clue again\n?") == "y":
             next_room = read_clue()
         else:
-            next_room = input("\n\nManually enter the clue.  Please enter either 'highest' or 'lowest'.\n")
+            print("\n\nManually obtaining the clue from the parameter server.")
+            next_room = rosparam.get_param("/competition2_server/shapes_room")
+            print("Shapes room is room {}.".format(next_room))
+            
 
     # TODO read map on the wall and associate numbers with letters
     # assumption: saved as dictionary (see numbered_locations.yaml for format)
@@ -189,12 +192,6 @@ def maze():
 
     return next_room, who
 
-def test_traverse():
-
-    send_goal_client.localize()
-    send_goal_client.teleport(0)
-    # send_goal_client.traverse(3)
-
 if __name__ == "__main__":
 
     rospy.init_node("main_node")
@@ -208,26 +205,23 @@ if __name__ == "__main__":
     move = Move()
     send_goal_client = SendGoalClient()
 
-    # TODO remove if running
-    # test_traverse()
-
     # clue
     who = "Joe"
     where = "kitchen"
     what = "frying pan"
 
     # localize
-    # send_goal_client.localize()
+    send_goal_client.localize()
 
     # lobby
-    # send_goal_client.traverse(0)
-    # while input("\n\nWould you like to start the lobby task?\n") == "y":
-    #     next_room = lobby()
+    send_goal_client.traverse(0)
+    while input("\n\nWould you like to start the lobby task?\n") == "y":
+        next_room = lobby()
 
     # shape room
-    # send_goal_client.traverse(next_room)
-    # while input("\n\nWould you like to start the shapes task?\n") == "y":
-    #     next_room, what = shapes()
+    send_goal_client.traverse(next_room)
+    while input("\n\nWould you like to start the shapes task?\n") == "y":
+        next_room, what = shapes()
 
     # bandit room
     # send_goal_client.traverse(next_room)

@@ -9,6 +9,7 @@ import numpy as np
 from tf.transformations import quaternion_from_euler
 import rosparam
 from pathlib import Path
+from move import Move
 
 class SendGoalClient:
 
@@ -31,6 +32,8 @@ class SendGoalClient:
 
         self.initial_pose = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=10)
 
+        self.move = Move()
+
     def amcl_pose_callback(self, data):
 
         self.covariance["x"] = data.pose.covariance[0]
@@ -45,10 +48,11 @@ class SendGoalClient:
         print("\nplease wait...attempting to localize")
 
         iteration = 0
-        while (self.covariance["x"] + self.covariance["y"]) > 0.02 and iteration < 8:
+        while (self.covariance["x"] + self.covariance["y"]) > 0.005 and iteration < 8:
             print("covaraince:", (self.covariance["x"] + self.covariance["y"]))
-            self.rotate("right", 90, z=2.0)
+            self.rotate("right", 180, z=2.0)
             iteration += 1
+
 
         self.publish()
 
@@ -153,11 +157,10 @@ class SendGoalClient:
         az = 0.0
         if "az" in self.locations[location]:
             az = self.locations[location]["az"]
-        
+
         pose = PoseWithCovarianceStamped()
 
-        pose.header.stamp = rospy.Time.now()
-        pose.header.frame_id = "/map"
+        pose.header.frame_id = "map"
 
         pose.pose.pose.position.x = lx
         pose.pose.pose.position.y = ly
