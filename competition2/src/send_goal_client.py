@@ -117,15 +117,24 @@ class SendGoalClient:
         else:
             print("\nmoving to room {}".format(location))
         location = self.numbered_locations[location]
+        
         if doorway:
-            location = self.doorway_locations[location + "d"]
 
-        # get location data
-        lx = self.locations[location]["lx"]
-        ly = self.locations[location]["ly"]
-        az = 0.0
-        if "az" in self.locations[location]:
-            az = self.locations[location]["az"]
+             # get location data
+            lx = self.doorway_locations[location]["lx"]
+            ly = self.doorway_locations[location]["ly"]
+            az = 0.0
+            if "az" in self.doorway_locations[location]:
+                az = self.doorway_locations[location]["az"]
+        
+        else:
+
+            # get location data
+            lx = self.locations[location]["lx"]
+            ly = self.locations[location]["ly"]
+            az = 0.0
+            if "az" in self.locations[location]:
+                az = self.locations[location]["az"]
 
         # send location data to service
         goal = MoveBaseGoal()

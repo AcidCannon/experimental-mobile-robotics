@@ -215,6 +215,9 @@ def maze():
     next_room = 0 # TODO remove
     who = "Unknown" # TODO remove
 
+    # TODO remove
+    next_room = rosparam.get_param("/competition2_server/final_room")
+
 
     #### end here ####
 
