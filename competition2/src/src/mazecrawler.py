@@ -161,7 +161,6 @@ def main():
 
     signal.signal(signal.SIGINT, signal_handler)
     rospy.init_node('turtle')
-    global velocity_publisher, laser_subscriber
     velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=1 )
     laser_subscriber = rospy.Subscriber("/kobuki/laser/scan", LaserScan, laser_handler)
     rospy.Subscriber("/camera/rgb/image_raw", Image, camera_callback)
