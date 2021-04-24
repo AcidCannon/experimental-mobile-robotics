@@ -116,7 +116,7 @@ def shapes():
     # stitchImage.DEBUG = True
     # stitchImage.preStitch()
     # stitchImage.stitch()
-    print("=== Report === Read from png")
+    print("\n=== Report === Read from png")
     readClue = clue.ReadClue()
     next_room = readClue.shapes()
     
@@ -137,7 +137,7 @@ def shapes():
     response = getAnswer(count)
     next_room = response.room
     what = response.how
-    print("=== Answer got === next_room = " + str(next_room) + " weapon = " + str(what))
+    print("=== Answer got === next_room = " + str(next_room) + " weapon = " + str(what) + "\n")
     #### end here ####
 
     # end = time.time()
@@ -169,12 +169,12 @@ def bandits():
         # stitchImage.DEBUG = True
         # stitchImage.preStitch()
         # stitchImage.stitch()
-        print("=== Report === Read from png")
+        print("\n=== Report === Read from png")
         readClue = clue.ReadClue()
         next_room = readClue.bandit() # replace this line    
         if len(next_room) == 2:
-            passcode = next_room[0]
-            num_arms = next_room[1]
+            passcode = int(next_room[0])
+            num_arms = int(next_room[1])
         return passcode, num_arms
 
     passcode, num_arms = read_clue()
@@ -244,7 +244,7 @@ if __name__ == "__main__":
     # traverse to lobby
     lobby_start = time.time()
     send_goal_client.localize()
-    # send_goal_client.traverse(0)
+    send_goal_client.traverse(0)
 
     print("\n=== Detect Tesseract ===")
     os.system("./install.sh")
@@ -265,7 +265,7 @@ if __name__ == "__main__":
         next_room = lobby()
 
     # traverse to shape room doorway
-    # send_goal_client.traverse(next_room, doorway=True)
+    send_goal_client.traverse(next_room, doorway=True)
 
     # print lobby time
     lobby_end = time.time()
@@ -273,7 +273,7 @@ if __name__ == "__main__":
     print("\nfinish lobby time: {} seconds".format(lobby_time))
 
     # traverse to shape room center
-    # send_goal_client.traverse(next_room)
+    send_goal_client.traverse(next_room)
 
     # shape room
     shape_start = time.time()
@@ -281,7 +281,7 @@ if __name__ == "__main__":
         next_room, what = shapes()
 
     # traverse to bandit room doorway
-    # send_goal_client.traverse(next_room, doorway=True)
+    send_goal_client.traverse(next_room, doorway=True)
 
     # print shape room time
     shape_end = time.time()
@@ -289,15 +289,15 @@ if __name__ == "__main__":
     print("\nfinish shape time: {} seconds".format(shape_time))
     
     # traverse to bandit room center
-    # send_goal_client.traverse(next_room)
+    send_goal_client.traverse(next_room)
 
     # bandit room
     bandit_start = time.time()
     while input("\n\nWould you like to start the bandit task?\n") == "y":
-        next_room = bandits()
+        next_room, where = bandits()
 
     # traverse to maze room doorway
-    # send_goal_client.traverse(next_room, doorway=True)
+    send_goal_client.traverse(next_room, doorway=True)
 
     # print bandit room time
     bandit_end = time.time()
@@ -310,7 +310,7 @@ if __name__ == "__main__":
         next_room, who = maze()
 
     # traverse to final room doorway
-    # send_goal_client.traverse(next_room, doorway=True)
+    send_goal_client.traverse(next_room, doorway=True)
 
     # print maze room time
     maze_end = time.time()
@@ -318,7 +318,7 @@ if __name__ == "__main__":
     print("\nmaze room time: {} seconds".format(maze_time))
 
     # traverse to final room center
-    # send_goal_client.traverse(next_room)
+    send_goal_client.traverse(next_room)
 
     # final room
     print("\n\nfinal solution:")
