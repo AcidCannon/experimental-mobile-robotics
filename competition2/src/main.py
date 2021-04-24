@@ -17,6 +17,7 @@ from move import Move
 from send_goal_client import SendGoalClient
 from bandit_room import BanditRoom
 from ucb_bandit_room import UCBBanditRoom
+from read_room_number import ReadRoomNumber
 
 
 def lobby():
@@ -26,10 +27,8 @@ def lobby():
     @return next_room: int
     """
 
-    start = time.time()
+    # start = time.time()
 
-    #### add here ####
-    # TODO read clue on the wall and save as next_room
     def read_clue():
         # stitchImage = stitch_image.StitchImage()
         # stitchImage.DEBUG = True
@@ -39,7 +38,7 @@ def lobby():
         readClue = clue.ReadClue()
         next_room = readClue.lobby() # replace this line
         return next_room
-
+    
     next_room = read_clue()
     while input("\n\nThe clue reads {}.  Is this correct?\n".format(next_room)) == "n":
         if input("\n\nWould you like to attempt to use opencv to read the clue again\n?") == "y":
@@ -50,15 +49,16 @@ def lobby():
             print("Shapes room is room {}.".format(next_room))
             
 
-    # read map on the wall and associate numbers with letters
-    # assumption: saved as dictionary (see numbered_locations.yaml for format)
-    # assumption: lobby is assinged a value of 0
+    # TODO read map
     def read_map():
         """
         Extract room numbers from the map.
 
         @return numbered_locations: dict {int: string}
         """
+
+
+
         numbered_locations = rosparam.load_file(str(Path.home()) + "/catkin_ws/src/competition2/yaml/numbered_locations.yaml")[0][0]
         return numbered_locations
 
@@ -98,11 +98,9 @@ def lobby():
     elif next_room == "lowest":
         next_room = min(numbered_locations)
 
-    #### end here ####
-
-    end = time.time()
-    completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
-    print("\n\ntime to complete lobby: {} h:mm:ss\n".format(completion_time))
+    # end = time.time()
+    # completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
+    # print("\n\ntime to complete lobby: {} h:mm:ss\n".format(completion_time))
 
     return next_room
 
@@ -113,7 +111,7 @@ def shapes():
     @return next_room: int
     """
 
-    start = time.time()
+    # start = time.time()
     
     # stitchImage = stitch_image.StitchImage()
     # stitchImage.DEBUG = True
@@ -136,9 +134,9 @@ def shapes():
 
     #### end here ####
 
-    end = time.time()
-    completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
-    print("\ntime to complete shapes room: {} h:mm:ss\n".format(completion_time))
+    # end = time.time()
+    # completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
+    # print("\ntime to complete shapes room: {} h:mm:ss\n".format(completion_time))
 
     return next_room, what
 
@@ -149,7 +147,7 @@ def bandits():
     @return next_room: int
     """
 
-    start = time.time()
+    # start = time.time()
 
     #### add here ####
 
@@ -189,9 +187,9 @@ def bandits():
 
     #### end here ####
 
-    end = time.time()
-    completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
-    print("\ntime to complete bandit room: {} h:mm:ss\n".format(completion_time))
+    # end = time.time()
+    # completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
+    # print("\ntime to complete bandit room: {} h:mm:ss\n".format(completion_time))
 
     return next_room, where
 
@@ -202,19 +200,19 @@ def maze():
     @return next_room: int
     """
 
-    start = time.time()
+    # start = time.time()
 
     #### add here ####
 
     next_room = 0 # TODO remove
-    who = "Joe" # TODO remove
+    who = "Unknown" # TODO remove
 
 
     #### end here ####
 
-    end = time.time()
-    completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
-    print("\ntime to complete maze room: {} h:mm:ss\n".format(completion_time))
+    # end = time.time()
+    # completion_time = str(datetime.timedelta(seconds=(end - start))).split(".")[0]
+    # print("\ntime to complete maze room: {} h:mm:ss\n".format(completion_time))
 
     return next_room, who
 
@@ -233,6 +231,7 @@ if __name__ == "__main__":
     # start program
     print("\nstarting program\n")
     main_start = time.time()
+    print("\nstart time: {}".format(main_start))
 
     readRoomNumber = read_room_number.ReadRoomNumber()
     readRoomNumber.readRoomNumber(readRoomNumber.readPath)
@@ -244,35 +243,44 @@ if __name__ == "__main__":
     send_goal_client = SendGoalClient()
 
     # clue
-    who = "Joe"
-    where = "kitchen"
-    what = "frying pan"
+    who = "Unknown"
+    where = "Unknown"
+    what = "Unknown"
 
     # localize
     send_goal_client.localize()
 
     # lobby
-    send_goal_client.traverse(0)
+    # send_goal_client.traverse(0)
     while input("\n\nWould you like to start the lobby task?\n") == "y":
         next_room = lobby()
 
     # shape room
-    send_goal_client.traverse(next_room)
+    # send_goal_client.traverse(next_room)
+    lobby_time = str(datetime.timedelta(seconds=time.time()-main_start)).split(".")[0]
+    print("\nfinish lobby time: {} seconds".format(lobby_time))
     while input("\n\nWould you like to start the shapes task?\n") == "y":
         next_room, what = shapes()
 
     # bandit room
-    send_goal_client.traverse(next_room)
+    # send_goal_client.traverse(next_room)
+    shape_time = str(datetime.timedelta(seconds=time.time()-lobby_end)).split(".")[0]
+    print("\nfinish shape time: {} seconds".format(shape_time))
     while input("\n\nWould you like to start the bandits task?\n") == "y":
         next_room, where = bandits()
 
     # maze room
-    send_goal_client.traverse(next_room)
+    # send_goal_client.traverse(next_room)
+    bandit_time = str(datetime.timedelta(seconds=time.time()-shape_end)).split(".")[0]
+    print("\nfinish shape time: {} seconds".format(bandit_time))
     while input("\n\nWould you like to start the maze room?\n") == "y":
         next_room, who = maze()
 
     # solution reading room
     # send_goal_client.traverse(next_room)
+    solution_time = str(datetime.timedelta(seconds=time.time()-bandit_end)).split(".")[0]
+    print("\nfinish solution room time: {} seconds".format(finish_solution))
+    
     print("\n\nfinal solution:")
     print("who:", who)
     print("what:", what)
