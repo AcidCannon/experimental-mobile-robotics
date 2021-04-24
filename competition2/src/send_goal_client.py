@@ -211,7 +211,7 @@ class SendGoalClient:
         pose = Pose()
         pose.position.x = lx
         pose.position.y = ly
-/gazebo/set_model_state
+
         orientation = quaternion_from_euler(0, 0, az)
         pose.orientation.x = orientation[0]
         pose.orientation.y = orientation[1]
