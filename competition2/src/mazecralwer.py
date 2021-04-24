@@ -18,6 +18,7 @@ import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 
+import read_clue
 bridge_object = CvBridge()
 
 def signal_handler(sig, frame):
@@ -150,6 +151,8 @@ def camera_callback(data):
                 setvelocity(newvelocity)
                 print("found sighn")
                 rospy.signal_shutdown("x")
+                
+
                 
     
 
