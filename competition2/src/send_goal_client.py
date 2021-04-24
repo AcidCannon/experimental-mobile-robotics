@@ -48,7 +48,7 @@ class SendGoalClient:
         print("\nplease wait...attempting to localize")
 
         iteration = 0
-        while (self.covariance["x"] + self.covariance["y"]) > 0.005 and iteration < 8:
+        while (self.covariance["x"] + self.covariance["y"]) > 0.02 and iteration < 8:
             print("covaraince:", (self.covariance["x"] + self.covariance["y"]))
             self.rotate("right", 180, z=2.0)
             iteration += 1
@@ -143,7 +143,7 @@ class SendGoalClient:
 
         print("room reached.\n")
 
-    def teleport(self, location):
+    def teleport_old(self, location):
 
         if location == 0:
             print("\nteleporting to lobby")
@@ -173,7 +173,7 @@ class SendGoalClient:
 
         self.initial_pose.publish(pose)
 
-    def teleport_old(self, location):
+    def teleport(self, location):
         """
         Teleport robot's position.
 

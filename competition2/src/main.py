@@ -215,6 +215,12 @@ if __name__ == "__main__":
 
     # lobby
     send_goal_client.traverse(0)
+
+    # TODO remove
+    send_goal_client.teleport(2)
+    send_goal_client.localize()
+    send_goal_client.traverse(0)
+
     while input("\n\nWould you like to start the lobby task?\n") == "y":
         next_room = lobby()
 
