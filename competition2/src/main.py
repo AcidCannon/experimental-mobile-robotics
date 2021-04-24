@@ -215,12 +215,6 @@ if __name__ == "__main__":
 
     # lobby
     send_goal_client.traverse(0)
-
-    # TODO remove
-    send_goal_client.teleport(2)
-    send_goal_client.localize()
-    send_goal_client.traverse(0)
-
     while input("\n\nWould you like to start the lobby task?\n") == "y":
         next_room = lobby()
 
@@ -230,14 +224,14 @@ if __name__ == "__main__":
         next_room, what = shapes()
 
     # bandit room
-    # send_goal_client.traverse(next_room)
-    # while input("\n\nWould you like to start the bandits task?\n") == "y":
-    #     next_room, where = bandits()
+    send_goal_client.traverse(next_room)
+    while input("\n\nWould you like to start the bandits task?\n") == "y":
+        next_room, where = bandits()
 
     # maze room
-    # send_goal_client.traverse(next_room)
-    # while input("\n\nWould you like to start the maze room?\n") == "y":
-    #     next_room, who = maze()
+    send_goal_client.traverse(next_room)
+    while input("\n\nWould you like to start the maze room?\n") == "y":
+        next_room, who = maze()
 
     # solution reading room
     # send_goal_client.traverse(next_room)
