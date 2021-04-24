@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-#outside maze x = 0.32 y = -9.25
-# start (0,0,0)
 import rospy, time, signal, sys, actionlib
 import math
 import test
@@ -117,41 +115,4 @@ if __name__ == "__main__":
     velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=1 )
     laser_subscriber = rospy.Subscriber("/kobuki/laser/scan", LaserScan, laser_handler)
     
-    
-    # turtle_subscriber = turtle_topics()
-
-    # service = serviceServer(turtle_subscriber)
-    # rospy.wait_for_service('/check_state')
-    # service_connection = rospy.ServiceProxy('/check_state', SetBool)
-    # service_request_obj = SetBoolRequest()
-    
-    # action_server = turtle_actions(turtle_subscriber)
-    # action_client = actionlib.SimpleActionClient('/turtle_action_server', TestAction)
-    # action_client.wait_for_server()
-    # goal = TestActionGoal()
-    # goal.goal = 1
-    
-    
-    # now = time.time()
-    
-    # while(True):
-        
-        # rospy.sleep(0.05)
-        # action_client.send_goal(goal, feedback_cb=action_feedback)
-       
-        # while(action_client.get_state() < 2):
-        #     pass
-        # service_connection(service_request_obj)
-        
-        # if(action_server.get_finished()):
-        #     service_request_obj.data = True 
-        #     service_connection(service_request_obj)
-        #     break
-        # time.sleep(0.02)
-
-    # print( "Finished in: "+ str(time.time()- now) + "seconds" )
-    
-    
-
-
     rospy.spin()
